@@ -1,4 +1,5 @@
-﻿using Cells.Genetics;
+﻿using Cells.GameObjects;
+using Cells.Genetics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -16,8 +17,8 @@ namespace Cells
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        public static int Width = 1920;
-        public static int Height = 1080;
+        public static int Width = 1280;
+        public static int Height = 720;
 
         public static Texture2D circle, virus, sprint;
 
@@ -40,7 +41,7 @@ namespace Cells
         {
             graphics.PreferredBackBufferWidth = Width;  // set this value to the desired width of your window
             graphics.PreferredBackBufferHeight = Height;   // set this value to the desired height of your window
-            graphics.IsFullScreen = true;
+            graphics.IsFullScreen = false;
             graphics.ApplyChanges();
 
             base.Initialize();
@@ -60,7 +61,12 @@ namespace Cells
 
             for (int i = 0; i < 100; i++)
             {
-                ObjectManager.Instance.Add(new Individual(new DNA()));
+                ObjectManager.Instance.Add(new Organism(new DNA(50, 200)));
+            }
+
+            for (int i = 0; i < 100; i++)
+            {
+                ObjectManager.Instance.Add(new Food(new Vector2(r.Next(Width), r.Next(Height)), r.Next(10, 100)));
             }
 
             // TODO: use this.Content to load your game content here
@@ -75,7 +81,7 @@ namespace Cells
             // TODO: Unload any non ContentManager content here
         }
 
-        float spawnRate = 1f;
+        float spawnRate = 5f;
         float spawnTime = 1f;
 
         /// <summary>
@@ -94,6 +100,7 @@ namespace Cells
 
             if (spawnTime < 0f)
             {
+                ObjectManager.Instance.Add(new Food(new Vector2(r.Next(Width), r.Next(Height)), r.Next(10, 100)));
                 //Spawn
                 spawnTime = spawnRate;
             }

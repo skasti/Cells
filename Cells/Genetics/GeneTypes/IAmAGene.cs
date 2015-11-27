@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Cells.Genetics.Genes
+namespace Cells.Genetics.GeneTypes
 {
-    public abstract class GeneticBehaviour
+    public interface IAmAGene
     {
-
     }
 }

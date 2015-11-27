@@ -30,10 +30,10 @@ namespace Cells
 
         public void Update(float deltaTime)
         {
-            CheckCollisions();
-
             foreach (var obj in _gameObjects)
                 obj.Update(deltaTime);
+
+            CheckCollisions(deltaTime);
 
             _gameObjects.AddRange(_addQueue);
             _addQueue.Clear();
@@ -44,13 +44,13 @@ namespace Cells
             _removeQueue.Clear();
         }
 
-        public void CheckCollisions()
+        public void CheckCollisions(float deltaTime)
         {
             foreach (var gameObject in _gameObjects)
             {
                 _gameObjects
                     .Where(o => o != gameObject && o.Bounds.Intersects(gameObject.Bounds))
-                    .ToList().ForEach(c => gameObject.HandleCollision(c));
+                    .ToList().ForEach(c => gameObject.HandleCollision(c, deltaTime));
             }
         }
 

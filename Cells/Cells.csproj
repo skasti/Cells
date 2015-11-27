@@ -38,18 +38,36 @@
     <ApplicationIcon>Icon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ColorExtensions.cs" />
     <Compile Include="Game1.cs" />
-    <Compile Include="GameObject.cs" />
+    <Compile Include="GameObjects\Food.cs" />
+    <Compile Include="GameObjects\GameObject.cs" />
     <Compile Include="Genetics\DNA.cs" />
     <Compile Include="Genetics\DNAExtensions.cs" />
     <Compile Include="Genetics\Exceptions\GenomeTooShortException.cs" />
-    <Compile Include="Genetics\Genes\Gene.cs" />
-    <Compile Include="Genetics\Genes\GeneticBehaviour.cs" />
-    <Compile Include="Genetics\Genes\Behaviour\CancelMotion.cs" />
-    <Compile Include="Individual.cs" />
+    <Compile Include="Genetics\GeneExtensions.cs" />
+    <Compile Include="Genetics\GeneInterpreter.cs" />
+    <Compile Include="Genetics\GeneMaker.cs" />
+    <Compile Include="Genetics\Genes\CollisionBlock.cs" />
+    <Compile Include="Genetics\Genes\ParthenoGenesis.cs" />
+    <Compile Include="Genetics\Genes\RandomMovement.cs" />
+    <Compile Include="Genetics\Genes\UpdateBlock.cs" />
+    <Compile Include="Genetics\GeneTypes\IAmAGene.cs" />
+    <Compile Include="Genetics\IMakeAGene.cs" />
+    <Compile Include="Genetics\Genes\Break.cs" />
+    <Compile Include="Genetics\Genes\EatFood.cs" />
+    <Compile Include="Genetics\Genes\EatOrganisms.cs" />
+    <Compile Include="Genetics\Genes\SmoothColorChange.cs" />
+    <Compile Include="Genetics\GeneTypes\ICanUpdate.cs" />
+    <Compile Include="Genetics\GeneTypes\IHandleCollisions.cs" />
+    <Compile Include="Genetics\GeneTypes\ITrait.cs" />
+    <Compile Include="Genetics\Genes\SetColor.cs" />
+    <Compile Include="GameObjects\Organism.cs" />
+    <Compile Include="Genetics\Exceptions\NotEnoughParentDNAException.cs" />
     <Compile Include="ObjectManager.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="VectorExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

@@ -4,9 +4,9 @@
   <Platform>Windows</Platform>
   <Config />
   <SourceFiles>
-    <File>C:/projects/Cells/Cells/Content/circle.png</File>
-    <File>C:/projects/Cells/Cells/Content/arial.spritefont</File>
-    <File>C:/projects/Cells/Cells/Content/virus.png</File>
-    <File>C:/projects/Cells/Cells/Content/sprint.png</File>
+    <File>E:/Projects/Cells/Cells/Content/circle.png</File>
+    <File>E:/Projects/Cells/Cells/Content/arial.spritefont</File>
+    <File>E:/Projects/Cells/Cells/Content/virus.png</File>
+    <File>E:/Projects/Cells/Cells/Content/sprint.png</File>
   </SourceFiles>
 </SourceFileCollection>

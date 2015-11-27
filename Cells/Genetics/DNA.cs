@@ -9,23 +9,25 @@ namespace Cells.Genetics
 {
     public class DNA
     {
+        private const int MinimumFragmentLength = 10;
+        private const float DefaultMutationRate = 0.001f;
+
         static Random _random;
         static Random Random
         {
-            get
-            {
-                if (_random == null)
-                    _random = new Random((int)DateTime.Now.Ticks);
-
-                return _random;
-            }
+            get { return _random ?? (_random = new Random((int) DateTime.Now.Ticks)); }
         }
 
         public byte[] Data { get; private set; }
 
-        public DNA()
+        public int Size
         {
-            Data = new byte[6 + Random.Next(100)];
+            get { return Data.Length; }
+        }
+
+        public DNA(int minLength, int maxLength)
+        {
+            Data = new byte[minLength + Random.Next(maxLength - minLength)];
 
             for (int i = 0; i < Data.Length; i++)
             {
@@ -33,14 +35,73 @@ namespace Cells.Genetics
             }
         }
 
-        public void ApplyTraits(Individual individual)
+        public DNA(params DNA[] parents)
         {
-            if (Data.Length < 6)
-                throw new GenomeTooShortException();
+            var numParents = parents.Length;
 
-            individual.BaseMetabolicRate = Data[0].AsFloat(0.01f, 10f);
-            individual.MovementMetabolicRate = Data[1].AsFloat(0.01f, 0.5f);
-            individual.Color = new Color(Data[2].AsFloat(), Data[3].AsFloat(), Data[4].AsFloat(), Data[5].AsFloat());
+            if (numParents < 1)
+                throw new NotEnoughParentDNAException();
+
+            if (numParents == 1)
+            {
+                Data = parents[0].GetFragment(0, parents[0].Size - 1);
+            }
+            else
+            {
+                var orderedParents = parents.OrderBy(p => p.Data.Length).ToList();
+
+                var numSplits = numParents - 1;
+
+                var fragments = new List<byte[]>();
+
+                var largestParent = orderedParents.Last().Data.Length;
+
+                int lastSplit = 0;
+
+                for (int i = 0; i < numSplits; i++)
+                {
+                    var splitIndex = Random.Next(lastSplit + MinimumFragmentLength,
+                        largestParent - MinimumFragmentLength*(numSplits - i));
+
+                    if (splitIndex >= orderedParents[i].Size)
+                        splitIndex = orderedParents[i].Size - 1;
+
+                    fragments.Add(orderedParents[i].GetFragment(lastSplit, splitIndex - 1));
+                    lastSplit = splitIndex;
+                }
+
+                if (orderedParents.Count > 1)
+                    fragments.Add(orderedParents.Last().GetFragment(lastSplit, orderedParents.Last().Size - 1));
+
+                Data = fragments.Join().ToArray();
+            }
+        }
+
+        public byte[] GetFragment(int start, int end, float mutationRate = DefaultMutationRate)
+        {
+            if (start >= end)
+                throw new ArgumentException("Start must be before end");
+
+            if (end >= Size)
+                throw new ArgumentException("End must be smaller than Size");
+
+            var fragment = new byte[end - start];
+            var fragmentIndex = 0;
+
+            for (int i = start; i < end; i++)
+            {
+                if (Random.NextDouble() <= mutationRate)
+                    fragment[fragmentIndex++] = Data[i].Mutate();
+                else
+                    fragment[fragmentIndex++] = Data[i];
+            }
+
+            return fragment;
+        }
+
+        public byte[] GetFragment(int start, IMakeAGene maker)
+        {
+            return GetFragment(start, start + maker.Size, 0f);
         }
     }
 }
