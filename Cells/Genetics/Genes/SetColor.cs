@@ -1,16 +1,17 @@
-﻿using Cells.GameObjects;
+﻿using System.Diagnostics;
+using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
 using Microsoft.Xna.Framework;
 
 namespace Cells.Genetics.Genes
 {
-    public class SetColor : IAmAGene, ITrait, ICanUpdate
+    public class SetColor : ITrait, ICanUpdate
     {
         public class Maker : GeneMaker
         {
             public Maker()
-                : base(0x30, 0x3F, 5)
+                : base(0x30, 0x38, 5)
             {
             }
 
@@ -42,6 +43,9 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
+            if (Game1.Debug == self)
+                Debug.WriteLine("[SetColor] " + _color);
+
             self.Color = _color;
             return 0;
         }

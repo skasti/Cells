@@ -2,6 +2,7 @@
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.Xna.Framework;
 
 namespace Cells
 {
@@ -73,6 +74,11 @@ namespace Cells
         public IEnumerable<T> GetObjects<T>()
         {
             return _gameObjects.Where(go => go is T).Cast<T>();
+        }
+
+        public IEnumerable<T> GetObjects<T>(Vector2 point)
+        {
+            return _gameObjects.Where(go => go is T && go.Bounds.Contains(point)).Cast<T>();
         }
     }
 }

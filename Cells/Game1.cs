@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using Cells.GameObjects;
 using Cells.Genetics;
 using Microsoft.Xna.Framework;
@@ -24,13 +23,16 @@ namespace Cells
 
         public static Random Random;
 
-        private Organism oldest, nextOldest;
+        private Organism _fittest;
+
+        public static Organism Debug;
 
         public Game1()
         {
             Random = new Random((int)DateTime.Now.Ticks);
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
+            IsMouseVisible = true;
         }
 
         /// <summary>
@@ -55,18 +57,21 @@ namespace Cells
         /// </summary>
         protected override void LoadContent()
         {
+            GeneInterpreter.CheckMakerIntegrity();
+
             // Create a new SpriteBatch, which can be used to draw textures.
             _spriteBatch = new SpriteBatch(GraphicsDevice);
             Circle = Content.Load<Texture2D>("circle");
             Virus = Content.Load<Texture2D>("virus");
             Sprint = Content.Load<Texture2D>("sprint");
 
-            for (int i = 0; i < 50; i++)
+            for (int i = 0; i < 2; i++)
             {
-                ObjectManager.Instance.Add(new Organism(new DNA(10, 100)));
+                ObjectManager.Instance.Add(new Organism(new DNA("programmed.txt")));
+                //ObjectManager.Instance.Add(new Organism(new DNA(10, 400)));
             }
 
-            for (int i = 0; i < 200; i++)
+            for (int i = 0; i < 50; i++)
             {
                 ObjectManager.Instance.Add(new Food(new Vector2(Random.Next(Width), Random.Next(Height)), Random.Next(100, 500)));
             }
@@ -83,7 +88,7 @@ namespace Cells
             // TODO: Unload any non ContentManager content here
         }
 
-        private const float SpawnRate = 0.5f;
+        private const float SpawnRate = 0.1f;
         float _spawnTime = 1f;
 
         /// <summary>
@@ -96,47 +101,43 @@ namespace Cells
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
+            MouseState mouse = Mouse.GetState();
+            if (mouse.LeftButton == ButtonState.Pressed)
+            {
+                var position = mouse.Position.ToVector2();
+                Debug = ObjectManager.Instance.GetObjects<Organism>(position).FirstOrDefault();
+            }
+
             var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             _spawnTime -= deltaTime;
 
-            var organisms = ObjectManager.Instance.GetObjects<Organism>().OrderByDescending(o => o.Age).ToList();
+            var organisms = ObjectManager.Instance.GetObjects<Organism>().OrderByDescending(o => o.EnergyGiven).ToList();
 
-            if ((oldest == null) && (organisms.Count > 1))
+            if ((_fittest == null) && (organisms.Count > 1))
             {
-                oldest = organisms[0];
-                nextOldest = organisms[1];
+                _fittest = organisms[0];
             }
             else if (organisms.Count > 1)
             {
-                if (organisms[0].Age > oldest.Age)
+                if (organisms[0].EnergyGiven > _fittest.EnergyGiven)
                 {
-                    nextOldest = oldest;
-                    oldest = organisms[0];
-                }
-                else if (organisms[0].Age > nextOldest.Age)
-                {
-                    nextOldest = organisms[0];
-                }
-
-                if (organisms[1].Age > nextOldest.Age)
-                {
-                    nextOldest = organisms[0];
+                    _fittest = organisms[0];
                 }
             }
 
             if (_spawnTime < 0f)
             {
-                if (ObjectManager.Instance.Count<Food>() < 100)
+                if (ObjectManager.Instance.Count<Food>() < 150)
                     ObjectManager.Instance.Add(new Food(new Vector2(Random.Next(Width), Random.Next(Height)), Random.Next(100, 500)));
 
-                if (ObjectManager.Instance.Count<Organism>() < 50)
+                if (ObjectManager.Instance.Count<Organism>() < 10)
                 {
 
                     var dna = new DNA(20, 150);
 
-                    if ((oldest != null) && (nextOldest != null))
-                        dna = new DNA(oldest.DNA, nextOldest.DNA, dna);
+                    if (_fittest != null)
+                        dna = new DNA(_fittest.DNA, dna);
 
                     ObjectManager.Instance.Add(new Organism(dna));
                 }
@@ -144,9 +145,13 @@ namespace Cells
                 _spawnTime = SpawnRate;
             }
 
-            ObjectManager.Instance.Update(deltaTime);
-            
-            // TODO: Add your update logic here
+            if (!Keyboard.GetState().IsKeyDown(Keys.Space))
+                ObjectManager.Instance.Update(deltaTime);
+
+            if (Debug != null)
+                Window.Title = "Debugging: " + Debug.Position;
+            else if (_fittest != null)
+                Window.Title = "Fittest: " + _fittest.EnergyGiven;
 
             base.Update(gameTime);
         }
@@ -157,7 +162,7 @@ namespace Cells
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw(GameTime gameTime)
         {
-            GraphicsDevice.Clear(Color.White);
+            GraphicsDevice.Clear(Color.CornflowerBlue);
 
             ObjectManager.Instance.Draw(_spriteBatch);
 

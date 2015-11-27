@@ -16,6 +16,10 @@ namespace Cells.Genetics
             Size = size;
         }
 
+        protected GeneMaker(byte marker, int size)
+            :this(marker,marker,size)
+        {}
+
         public abstract IAmAGene Make(byte[] fragment);
     }
 }

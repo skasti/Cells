@@ -48,10 +48,20 @@
     <Compile Include="Genetics\GeneExtensions.cs" />
     <Compile Include="Genetics\GeneInterpreter.cs" />
     <Compile Include="Genetics\GeneMaker.cs" />
-    <Compile Include="Genetics\Genes\ChaseGameObject.cs" />
+    <Compile Include="Genetics\Genes\AvoidObject.cs" />
+    <Compile Include="Genetics\Genes\ChaseObject.cs" />
     <Compile Include="Genetics\Genes\CollisionHandler.cs" />
+    <Compile Include="Genetics\Genes\Programming\Goto.cs" />
+    <Compile Include="Genetics\Genes\Programming\MemorySubtract.cs" />
+    <Compile Include="Genetics\Genes\Programming\MemoryAdd.cs" />
+    <Compile Include="Genetics\Genes\Programming\MemorySet.cs" />
     <Compile Include="Genetics\Genes\ParthenoGenesis.cs" />
+    <Compile Include="Genetics\Genes\Programming\SkipIfLT.cs" />
+    <Compile Include="Genetics\Genes\Programming\SkipIfGT.cs" />
+    <Compile Include="Genetics\Genes\Programming\SkipIfNotEquals.cs" />
+    <Compile Include="Genetics\Genes\Programming\SkipIfEquals.cs" />
     <Compile Include="Genetics\Genes\RandomMovement.cs" />
+    <Compile Include="Genetics\Genes\SetTopSpeed.cs" />
     <Compile Include="Genetics\Genes\TargetOrganisms.cs" />
     <Compile Include="Genetics\Genes\TargetFood.cs" />
     <Compile Include="Genetics\Genes\UpdateBlock.cs" />
@@ -81,6 +91,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Icon.ico" />
+    <Content Include="programmed.txt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <MonoGameContentReference Include="Content\Content.mgcb" />

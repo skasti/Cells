@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 namespace Cells.Genetics.Genes
 {
-    public class SmoothColorChange : IAmAGene, ICanUpdate
+    public class SmoothColorChange : ICanUpdate
     {
         public class Maker : GeneMaker
         {

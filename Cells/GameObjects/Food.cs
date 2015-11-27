@@ -9,7 +9,7 @@ namespace Cells.GameObjects
 
         public override Rectangle Bounds
         {
-            get { return new Rectangle(Position.ToPoint(), new Point(10,10));}
+            get { return new Rectangle(Position.ToPoint(), new Point(30,30));}
         }
 
         public override float DrawPriority
@@ -25,7 +25,7 @@ namespace Cells.GameObjects
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Game1.Circle, Bounds, Color.Fuchsia);
+            spriteBatch.Draw(Game1.Sprint, Bounds, Color.Fuchsia);
         }
     }
 }

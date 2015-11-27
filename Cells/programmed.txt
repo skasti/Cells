@@ -1,0 +1,43 @@
+30 SetColor
+00 R
+FF G
+00 B
+FF A
+39 SetTopSpeed
+80 TopSpeed
+50 UpdateBlock
+03 Size
+80 Parthenogenesis
+04 Threshold
+A0 ChildSize
+00 BirthSkip
+00 DefaultSkip
+A0 TargetFood
+80 Range
+01 Capacity
+00 MemoryLocation
+01 SkipIfNoTargets
+90 ChaseObject
+00 MemoryLocation (Food)
+80 Speed (50%)
+10 EatFood
+01 BlockLength
+00 MemoryLocation
+02 SkipIfTooFar
+02 SkipIfDead
+40 SmoothColorChange
+FF R
+00 G
+FF B
+FF A
+02 ChangeTime
+50 UpdateBlock
+02 Size
+A3 TargetOrganism
+20 Range
+01 Capacity
+01 MemoryLocation
+01 SkipIfNoTargets
+93 AvoidObject
+01 MemoryLocation (Organism)
+80 Speed (50%)

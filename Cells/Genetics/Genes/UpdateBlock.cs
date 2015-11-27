@@ -5,7 +5,7 @@ using Cells.Genetics.GeneTypes;
 
 namespace Cells.Genetics.Genes
 {
-    public class UpdateBlock: IAmAGene, ICanUpdate
+    public class UpdateBlock: ICanUpdate
     {
         public class Maker : GeneMaker
         {
@@ -37,7 +37,7 @@ namespace Cells.Genetics.Genes
             if (BlockLength == 0)
                 return;
 
-            for (int i = startIndex; i < startIndex + BlockLength; i++)
+            for (int i = startIndex; i <= startIndex + BlockLength; i++)
             {
                 if (i >= genes.Count)
                     break;

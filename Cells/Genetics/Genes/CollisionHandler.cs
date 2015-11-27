@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Cells.GameObjects;
 using Cells.Genetics.GeneTypes;
 
 namespace Cells.Genetics.Genes
 {
-    public abstract class CollisionHandler: IAmAGene, IHandleCollisions
+    public abstract class CollisionHandler: IHandleCollisions
     {
         public int BlockLength { get; private set; }
         public Type CollidesWith { get; private set; }
@@ -24,7 +25,7 @@ namespace Cells.Genetics.Genes
             if (BlockLength == 0)
                 return;
 
-            for (int i = startIndex; i < startIndex + BlockLength; i++)
+            for (int i = startIndex; i <= startIndex + BlockLength; i++)
             {
                 if (i >= genes.Count)
                     break;
@@ -35,16 +36,20 @@ namespace Cells.Genetics.Genes
                 if (genes[i] is ICanUpdate)
                     _updates.Add(genes[i] as ICanUpdate);
             }
-
-            BlockLength = _updates.Count;
         }
 
         public virtual void HandleCollision(Organism self, GameObject other, float deltaTime)
         {
+            if (Game1.Debug == self)
+                Debug.WriteLine("[HandleCollision] " + StartIndex);
+
             for (int i = StartIndex; i < _updates.Count; i++)
             {
                 i += _updates[i].Update(self, deltaTime);
             }
+
+            if (Game1.Debug == self)
+                Debug.WriteLine("[HandleCollision][FINISHED]");
         }
     }
 }

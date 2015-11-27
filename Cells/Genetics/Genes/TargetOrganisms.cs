@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
@@ -46,7 +43,14 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            var organismsInRange = ObjectManager.Instance.GetObjectsWithinRange<Organism>(self, _targetingRange).ToList();
+            if (Game1.Debug == self)
+                Debug.WriteLine("[TargetOrganisms] " + _targetingRange);
+
+            var organismsInRange = ObjectManager.Instance.GetObjectsWithinRange<Organism>(self, _targetingRange)
+                .OrderBy(self.Distance).ToList();
+
+            if (Game1.Debug == self)
+                Debug.WriteLine("[TargetOrganisms] " + organismsInRange.Count);
 
             if (organismsInRange.Count < 1)
                 return _noTargetsGoto;

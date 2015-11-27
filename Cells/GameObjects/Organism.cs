@@ -15,6 +15,7 @@ namespace Cells.GameObjects
         public DNA DNA { get; private set; }
 
         public float Energy { get; private set; }
+        public float EnergyGiven { get; private set; }
         public float BaseMetabolicRate { get; set; }
         public float MovementMetabolicRate { get; set; }
 
@@ -60,7 +61,8 @@ namespace Cells.GameObjects
             Color = Color.RoyalBlue;
             Energy = 500;
             BaseMetabolicRate = 50f;
-            MovementMetabolicRate = 0.01f;
+            MovementMetabolicRate = 0.03f;
+            TopSpeed = 500f;
         }
 
         public Organism(DNA dna, float energy, Vector2 position)
@@ -151,14 +153,6 @@ namespace Cells.GameObjects
                 return;
 
             base.Update(deltaTime);
-            if (Velocity.Length() > 500f)
-            {
-                var newVelocity = Velocity;
-                newVelocity.Normalize();
-                newVelocity *= 500f;
-
-                Velocity = newVelocity;
-            }
         }
 
         private void CalculateEnergyConsumption(float deltaTime)
@@ -168,7 +162,6 @@ namespace Cells.GameObjects
             if (Energy > 0f)
             {
                 var force = Force.Length();
-                var radius = Radius;
                 Energy -= force*MovementMetabolicRate*deltaTime;
             }
 
@@ -197,6 +190,7 @@ namespace Cells.GameObjects
         public void GiveEnergy(float amount)
         {
             Energy += amount;
+            EnergyGiven += amount;
         }
 
         public float TakeEnergy(float desiredAmount)
@@ -209,9 +203,9 @@ namespace Cells.GameObjects
                 Energy = 0f;
             }
             else
-            {
                 Energy -= taken;
-            }
+
+            EnergyGiven -= taken;
 
             return taken;
         }
@@ -238,6 +232,11 @@ namespace Cells.GameObjects
         {
             if (Memory.ContainsKey(key))
                 Memory.Remove(key);
+        }
+
+        public float Distance(GameObject go)
+        {
+            return (go.Position - Position).Length();
         }
     }
 }

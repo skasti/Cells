@@ -11,7 +11,7 @@ namespace Cells.Genetics.Genes
         public class Maker : GeneMaker
         {
             public Maker()
-                : base(0x80, 0x8F, 3)
+                : base(0x80, 0x8F, 5)
             {
             }
 
@@ -20,17 +20,25 @@ namespace Cells.Genetics.Genes
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
-                return new ParthenoGenesis(fragment[1].AsFloat(500f, 5000f), fragment[2].AsFloat(0.1f, 0.5f));
+                return new ParthenoGenesis(
+                    fragment[1].AsFloat(500f, 5000f), 
+                    fragment[2].AsFloat(0.1f, 0.5f),
+                    fragment[3].AsByte(0x10),
+                    fragment[4].AsByte(0x10));
             }
         }
 
         public float EnergyThreshold { get; private set; }
         private readonly float _childSize;
+        private readonly byte _skipOnBirth;
+        private readonly byte _defaultSkip;
 
-        public ParthenoGenesis(float energyThreshold, float childSize)
+        public ParthenoGenesis(float energyThreshold, float childSize, byte skipOnBirth, byte defaultSkip)
         {
             EnergyThreshold = energyThreshold;
             _childSize = childSize;
+            _skipOnBirth = skipOnBirth;
+            _defaultSkip = defaultSkip;
         }
 
         public int Update(Organism self, float deltaTime)
@@ -46,12 +54,13 @@ namespace Cells.Genetics.Genes
                 var child = new Organism(new DNA(self.DNA), energy, self.Position + spawnDirection * spawnDistance);
                 ObjectManager.Instance.Add(child);
 
-                Debug.WriteLine("[ParthenoGenesis][Birth]" + child.Position);
+                if (Game1.Debug == self)
+                    Debug.WriteLine("[ParthenoGenesis][Birth]" + child.Position);
 
-                return 0;
+                return _skipOnBirth;
             }
 
-            return 1;
+            return _defaultSkip;
         }
     }
 }

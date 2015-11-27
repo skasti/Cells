@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <SourceFile>E:/Projects/Cells/Cells/Content/sprint.png</SourceFile>
-  <SourceTime>2015-11-26T21:09:09.1827834+01:00</SourceTime>
-  <DestFile>E:/Projects/Cells/Cells/Content/bin/Windows/sprint.xnb</DestFile>
-  <DestTime>2015-11-26T21:16:19.1427069+01:00</DestTime>
+  <SourceFile>C:/projects/Cells/Cells/Content/sprint.png</SourceFile>
+  <SourceTime>2015-11-23T23:30:27.72569+01:00</SourceTime>
+  <DestFile>C:/projects/Cells/Cells/Content/bin/Windows/sprint.xnb</DestFile>
+  <DestTime>2015-11-27T17:28:28.3270855+01:00</DestTime>
   <Importer>TextureImporter</Importer>
   <ImporterTime>2015-04-29T19:14:44+02:00</ImporterTime>
   <Processor>TextureProcessor</Processor>

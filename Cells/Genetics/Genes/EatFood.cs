@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Diagnostics;
 using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
@@ -41,25 +41,37 @@ namespace Cells.Genetics.Genes
 
         public override void HandleCollision(Organism self, GameObject other, float deltaTime)
         {
+            if (Game1.Debug == self)
+                Debug.WriteLine("[EatFood][Collision] " + other.Position);
+
             StartIndex = 0;
+            var food = other as Food;
 
             if (other.Alive)
             {
                 var distance = (self.Position - other.Position).Length();
 
-                if (distance < self.Radius)
+                if (distance < self.Radius + other.Bounds.Width*0.5f)
                 {
-                    self.GiveEnergy((other as Food).Energy);
+                    if (Game1.Debug == self)
+                        Debug.WriteLine("[EatFood][Eating]");
+                    self.GiveEnergy(food.Energy);
                     other.Die(true);
                 }
                 else
                 {
-                    self.Remember(_targetMemoryLocation, other as Food);
+                    if (Game1.Debug == self)
+                        Debug.WriteLine("[EatFood][TooFar]");
+                    self.Remember(_targetMemoryLocation, food);
+
                     StartIndex = _tooFarGoto;
                 }
             }
             else
             {
+                if (Game1.Debug == self)
+                    Debug.WriteLine("[EatFood][WasDead]");
+
                 StartIndex = _deadGoto;
             }
 

@@ -4,7 +4,7 @@ using Cells.Genetics.GeneTypes;
 
 namespace Cells.Genetics.Genes
 {
-    public class Break: IAmAGene, ICanUpdate
+    public class Break: ICanUpdate
     {
         public class Maker: GeneMaker
         {

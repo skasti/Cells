@@ -22,6 +22,7 @@ namespace Cells.GameObjects
             get { return !Alive; }
         }
         public bool Removed { get; private set; }
+        public float TopSpeed { get; set; }
 
         protected GameObject()
         {
@@ -74,6 +75,16 @@ namespace Cells.GameObjects
         {
             Acceleration = Force/Mass + ExternalForce/Mass;
             Velocity += Acceleration*deltaTime;
+
+            if (Velocity.Length() > TopSpeed)
+            {
+                var newVelocity = Velocity;
+                newVelocity.Normalize();
+                newVelocity *= TopSpeed;
+
+                Velocity = newVelocity;
+            }
+
             Position += Velocity*deltaTime;
             ExternalForce = ((-Velocity*Mass)/deltaTime)*0.002f;
         }

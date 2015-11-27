@@ -1,0 +1,8 @@
+C:\projects\Cells\DNACoder\bin\Debug\DNACoder.exe.config
+C:\projects\Cells\DNACoder\bin\Debug\DNACoder.exe
+C:\projects\Cells\DNACoder\bin\Debug\DNACoder.pdb
+C:\projects\Cells\DNACoder\obj\Debug\DNACoder.csprojResolveAssemblyReference.cache
+C:\projects\Cells\DNACoder\obj\Debug\DNACoder.exe
+C:\projects\Cells\DNACoder\obj\Debug\DNACoder.pdb
+C:\projects\Cells\DNACoder\bin\Debug\DNACoder.exe.CodeAnalysisLog.xml
+C:\projects\Cells\DNACoder\bin\Debug\DNACoder.exe.lastcodeanalysissucceeded

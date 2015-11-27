@@ -1,6 +1,7 @@
 ﻿using Cells.Genetics.Exceptions;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 
 namespace Cells.Genetics
@@ -23,6 +24,12 @@ namespace Cells.Genetics
             get { return Data.Length; }
         }
 
+        public DNA(String filename)
+        {
+            List<String> lines = File.ReadAllLines(filename).ToList();
+            Data = lines.Select(line => Convert.ToByte(line.Substring(0,2), 16)).ToArray();
+        }
+
         public DNA(int minLength, int maxLength)
         {
             Data = new byte[minLength + Random.Next(maxLength - minLength)];
@@ -42,7 +49,7 @@ namespace Cells.Genetics
 
             if (numParents == 1)
             {
-                Data = parents[0].GetFragment(0, parents[0].Size - 1);
+                Data = parents[0].GetFragment(0, parents[0].Size);
             }
             else
             {
@@ -83,7 +90,7 @@ namespace Cells.Genetics
             if (start >= end)
                 throw new ArgumentException("Start must be before end");
 
-            if (end >= Size)
+            if (end > Size)
                 throw new ArgumentException("End must be smaller than Size");
 
             var fragment = new byte[end - start];

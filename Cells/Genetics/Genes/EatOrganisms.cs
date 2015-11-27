@@ -1,5 +1,4 @@
-﻿using System;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using Cells.GameObjects;
 using Cells.Genetics.GeneTypes;
 
@@ -62,11 +61,15 @@ namespace Cells.Genetics.Genes
                     var relativism = self.DNA.RelatedPercent(prey.DNA, _dnaSampleSize);
 
                     if (relativism < _relationThreshold)
-                        Debug.WriteLine("[EatOrganisms][CloseEnough] " + relativism);
+                    {
+                        if (Game1.Debug == self)
+                            Debug.WriteLine("[EatOrganisms][CloseEnough] " + relativism);
+                    }
                     else
                     {
-                        Debug.WriteLine("[EatOrganisms][IEatYou] " + relativism);
-                        self.GiveEnergy(prey.TakeEnergy(self.Energy * deltaTime));
+                        if (Game1.Debug == self)
+                            Debug.WriteLine("[EatOrganisms][IEatYou] " + relativism);
+                        self.GiveEnergy(prey.TakeEnergy(self.Energy*deltaTime));
                     }
                 }
             }

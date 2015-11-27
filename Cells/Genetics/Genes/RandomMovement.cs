@@ -5,7 +5,7 @@ using Microsoft.Xna.Framework;
 
 namespace Cells.Genetics.Genes
 {
-    public class RandomMovement: IAmAGene, ICanUpdate
+    public class RandomMovement: ICanUpdate
     {
         public class Maker : GeneMaker
         {
