@@ -16,8 +16,10 @@ namespace Cells.Genetics
             new SmoothColorChange.Maker(),
             new RandomMovement.Maker(),
             new UpdateBlock.Maker(),
-            new CollisionBlock.Maker(),
-            new ParthenoGenesis.Maker()
+            new ParthenoGenesis.Maker(),
+            new ChaseGameObject.Maker(),
+            new TargetFood.Maker(),
+            new TargetOrganisms.Maker()
         }; 
 
         public static List<IAmAGene> Interprit(DNA dna)

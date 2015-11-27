@@ -14,12 +14,14 @@ namespace Cells.GameObjects
         public virtual float Mass { get; protected set; }
         public abstract Rectangle Bounds { get; }
         public abstract float DrawPriority { get; }
-        public bool Alive { get; private set; }
 
+        public float Age { get; private set; }
+        public bool Alive { get; private set; }
         public bool Dead
         {
             get { return !Alive; }
         }
+        public bool Removed { get; private set; }
 
         protected GameObject()
         {
@@ -29,10 +31,15 @@ namespace Cells.GameObjects
             Velocity = Vector2.Zero;
             Force = Vector2.Zero;
             Alive = true;
+            Age = 0;
         }
 
         public virtual void Update(float deltaTime)
         {
+            if (Dead)
+                return;
+
+            Age += deltaTime;
             CalculatePhysics(deltaTime);
             CheckBorders();
         }
@@ -40,14 +47,27 @@ namespace Cells.GameObjects
         protected virtual void CheckBorders()
         {
             if (Position.X > Game1.Width)
+            {
+                Position = new Vector2(Game1.Width, Position.Y);
                 Velocity = Velocity.FlipX();
+            }
             if (Position.X < 0)
+            {
+                Position = new Vector2(0, Position.Y);
                 Velocity = Velocity.FlipX();
+            }
 
             if (Position.Y > Game1.Height)
+            {
+                Position = new Vector2(Position.X, Game1.Height);
                 Velocity = Velocity.FlipY();
+            }
+
             if (Position.Y < 0)
+            {
+                Position = new Vector2(Position.X, 0);
                 Velocity = Velocity.FlipY();
+            }
         }
 
         protected virtual void CalculatePhysics(float deltaTime)
@@ -63,7 +83,10 @@ namespace Cells.GameObjects
             Alive = false;
 
             if (remove)
+            {
+                Removed = true;
                 ObjectManager.Instance.Remove(this);
+            }
         }
 
         public virtual void Draw(SpriteBatch spriteBatch)

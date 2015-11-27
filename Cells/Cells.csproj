@@ -16,7 +16,7 @@
     </MonoGameContentBuilderExe>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -48,9 +48,12 @@
     <Compile Include="Genetics\GeneExtensions.cs" />
     <Compile Include="Genetics\GeneInterpreter.cs" />
     <Compile Include="Genetics\GeneMaker.cs" />
-    <Compile Include="Genetics\Genes\CollisionBlock.cs" />
+    <Compile Include="Genetics\Genes\ChaseGameObject.cs" />
+    <Compile Include="Genetics\Genes\CollisionHandler.cs" />
     <Compile Include="Genetics\Genes\ParthenoGenesis.cs" />
     <Compile Include="Genetics\Genes\RandomMovement.cs" />
+    <Compile Include="Genetics\Genes\TargetOrganisms.cs" />
+    <Compile Include="Genetics\Genes\TargetFood.cs" />
     <Compile Include="Genetics\Genes\UpdateBlock.cs" />
     <Compile Include="Genetics\GeneTypes\IAmAGene.cs" />
     <Compile Include="Genetics\IMakeAGene.cs" />

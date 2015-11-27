@@ -64,7 +64,10 @@ namespace Cells.Genetics
                     if (splitIndex >= orderedParents[i].Size)
                         splitIndex = orderedParents[i].Size - 1;
 
-                    fragments.Add(orderedParents[i].GetFragment(lastSplit, splitIndex - 1));
+                    if (splitIndex <= lastSplit)
+                        continue;
+
+                    fragments.Add(orderedParents[i].GetFragment(lastSplit, splitIndex));
                     lastSplit = splitIndex;
                 }
 
@@ -100,6 +103,11 @@ namespace Cells.Genetics
         public byte[] GetFragment(int start, IMakeAGene maker)
         {
             return GetFragment(start, start + maker.Size, 0f);
+        }
+
+        public float RelatedPercent(DNA other, int samples = MinimumFragmentLength)
+        {
+            return Data.Compare(other.Data, samples);
         }
     }
 }

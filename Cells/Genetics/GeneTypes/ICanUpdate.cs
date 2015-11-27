@@ -2,7 +2,7 @@
 
 namespace Cells.Genetics.GeneTypes
 {
-    public interface ICanUpdate
+    public interface ICanUpdate: IAmAGene
     {
         int Update(Organism self, float deltaTime);
     }

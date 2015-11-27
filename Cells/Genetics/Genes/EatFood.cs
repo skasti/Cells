@@ -1,45 +1,69 @@
 ﻿using System;
 using Cells.GameObjects;
+using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
 
 namespace Cells.Genetics.Genes
 {
-    public class EatFood : IAmAGene, IHandleCollisions
+    public class EatFood : CollisionHandler
     {
         public class Maker : GeneMaker
         {
             public Maker()
-                : base(0x10, 0x19, 1)
+                : base(0x10, 0x19, 5)
             {
             }
 
             public override IAmAGene Make(byte[] fragment)
             {
-                return new EatFood();
+                if (fragment.Length < Size)
+                    throw new GenomeTooShortException();
+
+                return new EatFood(
+                    fragment[1].AsByte(0x10), 
+                    fragment[2].AsByte(0x20),
+                    fragment[3].AsByte(0x10),
+                    fragment[3].AsByte(0x10));
             }
         }
 
-        public Type CollidesWith { get { return typeof (Food); }}
+        private readonly byte _targetMemoryLocation;
+        private readonly byte _tooFarGoto;
+        private readonly byte _deadGoto;
 
-        public void HandleCollision(Organism self, GameObject other, float deltaTime)
+        public EatFood(byte blockLength, byte targetMemoryLocation, byte tooFarGoto, byte deadGoto)
+            :base(blockLength, typeof(Food))
         {
-            if (!(other is Food))
-                return;
+            _targetMemoryLocation = targetMemoryLocation;
+            _tooFarGoto = tooFarGoto;
+            _deadGoto = deadGoto;
+        }
 
-            if (other.Dead)
-                return;
+        public override void HandleCollision(Organism self, GameObject other, float deltaTime)
+        {
+            StartIndex = 0;
 
-            var distance = (self.Position - other.Position).Length();
-
-            if (distance < self.Radius)
+            if (other.Alive)
             {
-                self.GiveEnergy((other as Food).Energy);
-                other.Die(true);
+                var distance = (self.Position - other.Position).Length();
+
+                if (distance < self.Radius)
+                {
+                    self.GiveEnergy((other as Food).Energy);
+                    other.Die(true);
+                }
+                else
+                {
+                    self.Remember(_targetMemoryLocation, other as Food);
+                    StartIndex = _tooFarGoto;
+                }
             }
             else
             {
-                self.Remember(0x10, other as Food);
+                StartIndex = _deadGoto;
             }
+
+            base.HandleCollision(self, other, deltaTime);
         }
     }
 }

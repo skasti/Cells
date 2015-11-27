@@ -2,7 +2,7 @@
 
 namespace Cells.Genetics.GeneTypes
 {
-    public interface ITrait
+    public interface ITrait: IAmAGene
     {
         void Apply(Organism self);
     }

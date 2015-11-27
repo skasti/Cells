@@ -1,4 +1,6 @@
-﻿using Cells.GameObjects;
+﻿using System.Collections.Generic;
+using System.Linq;
+using Cells.GameObjects;
 using Cells.Genetics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,6 +23,8 @@ namespace Cells
         public static Texture2D Circle, Virus, Sprint;
 
         public static Random Random;
+
+        private Organism oldest, nextOldest;
 
         public Game1()
         {
@@ -59,12 +63,12 @@ namespace Cells
 
             for (int i = 0; i < 50; i++)
             {
-                ObjectManager.Instance.Add(new Organism(new DNA(50, 200)));
+                ObjectManager.Instance.Add(new Organism(new DNA(10, 100)));
             }
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 200; i++)
             {
-                ObjectManager.Instance.Add(new Food(new Vector2(Random.Next(Width), Random.Next(Height)), Random.Next(10, 100)));
+                ObjectManager.Instance.Add(new Food(new Vector2(Random.Next(Width), Random.Next(Height)), Random.Next(100, 500)));
             }
 
             // TODO: use this.Content to load your game content here
@@ -79,7 +83,7 @@ namespace Cells
             // TODO: Unload any non ContentManager content here
         }
 
-        private const float SpawnRate = 10f;
+        private const float SpawnRate = 0.5f;
         float _spawnTime = 1f;
 
         /// <summary>
@@ -96,13 +100,46 @@ namespace Cells
 
             _spawnTime -= deltaTime;
 
+            var organisms = ObjectManager.Instance.GetObjects<Organism>().OrderByDescending(o => o.Age).ToList();
+
+            if ((oldest == null) && (organisms.Count > 1))
+            {
+                oldest = organisms[0];
+                nextOldest = organisms[1];
+            }
+            else if (organisms.Count > 1)
+            {
+                if (organisms[0].Age > oldest.Age)
+                {
+                    nextOldest = oldest;
+                    oldest = organisms[0];
+                }
+                else if (organisms[0].Age > nextOldest.Age)
+                {
+                    nextOldest = organisms[0];
+                }
+
+                if (organisms[1].Age > nextOldest.Age)
+                {
+                    nextOldest = organisms[0];
+                }
+            }
+
             if (_spawnTime < 0f)
             {
                 if (ObjectManager.Instance.Count<Food>() < 100)
-                    ObjectManager.Instance.Add(new Food(new Vector2(Random.Next(Width), Random.Next(Height)), Random.Next(10, 100)));
-                
+                    ObjectManager.Instance.Add(new Food(new Vector2(Random.Next(Width), Random.Next(Height)), Random.Next(100, 500)));
+
                 if (ObjectManager.Instance.Count<Organism>() < 50)
-                    ObjectManager.Instance.Add(new Organism(new DNA(50, 200)));
+                {
+
+                    var dna = new DNA(20, 150);
+
+                    if ((oldest != null) && (nextOldest != null))
+                        dna = new DNA(oldest.DNA, nextOldest.DNA, dna);
+
+                    ObjectManager.Instance.Add(new Organism(dna));
+                }
                 //Spawn
                 _spawnTime = SpawnRate;
             }

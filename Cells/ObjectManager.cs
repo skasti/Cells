@@ -69,5 +69,10 @@ namespace Cells
         {
             return _gameObjects.Count(go => go is T);
         }
+
+        public IEnumerable<T> GetObjects<T>()
+        {
+            return _gameObjects.Where(go => go is T).Cast<T>();
+        }
     }
 }

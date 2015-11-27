@@ -50,8 +50,7 @@ namespace Cells.GameObjects
         }
 
         private readonly List<UpdateBlock> _updateBlocks = new List<UpdateBlock>();
-        private readonly List<CollisionBlock> _collisionBlocks = new List<CollisionBlock>();
-        private readonly Dictionary<Type, IHandleCollisions> _collisionHandlers = new Dictionary<Type, IHandleCollisions>();
+        private readonly Dictionary<Type, List<IHandleCollisions>> _collisionHandlers = new Dictionary<Type, List<IHandleCollisions>>();
  
         public Organism()
         {
@@ -60,8 +59,8 @@ namespace Cells.GameObjects
             Energy = 500;
             Color = Color.RoyalBlue;
             Energy = 500;
-            BaseMetabolicRate = 10f;
-            MovementMetabolicRate = 0.03f;
+            BaseMetabolicRate = 50f;
+            MovementMetabolicRate = 0.01f;
         }
 
         public Organism(DNA dna, float energy, Vector2 position)
@@ -81,35 +80,29 @@ namespace Cells.GameObjects
             ApplyTraits(genes);
 
             LoadUpdateBlocks(genes);
-            LoadCollisionBlocks(genes);
-
             LoadCollisionHandlers(genes);
         }
 
-        private void LoadCollisionHandlers(IEnumerable<IAmAGene> genes)
+        private void AddCollisionHandler(IHandleCollisions collisionHandler)
         {
-            var collisionHandlers = genes.Where(g => g is IHandleCollisions).Cast<IHandleCollisions>();
-            foreach (var collisionHandler in collisionHandlers)
-            {
-                if (_collisionHandlers.ContainsKey(collisionHandler.CollidesWith))
-                    _collisionHandlers[collisionHandler.CollidesWith] = collisionHandler;
-                else
-                    _collisionHandlers.Add(collisionHandler.CollidesWith, collisionHandler);
-            }
+            if (_collisionHandlers.ContainsKey(collisionHandler.CollidesWith))
+                _collisionHandlers[collisionHandler.CollidesWith].Add(collisionHandler);
+            else
+                _collisionHandlers.Add(collisionHandler.CollidesWith, new List<IHandleCollisions> {collisionHandler});
         }
 
-        private void LoadCollisionBlocks(List<IAmAGene> genes)
+        private void LoadCollisionHandlers(List<IAmAGene> genes)
         {
-            var collisionBlockIndex = genes.FirstIndexOf<CollisionBlock>();
-            while (collisionBlockIndex >= 0)
+            var collisionHandlerIndex = genes.FirstIndexOf<IHandleCollisions>();
+            while (collisionHandlerIndex >= 0)
             {
-                var collisionBlock = genes[collisionBlockIndex] as CollisionBlock;
-                if (collisionBlock == null) continue;
+                var collisionHandler = genes[collisionHandlerIndex] as IHandleCollisions;
+                if (collisionHandler == null) continue;
                 
-                collisionBlock.ReadGenes(collisionBlockIndex, genes);
-                _collisionBlocks.Add(collisionBlock);
+                collisionHandler.LoadBlock(collisionHandlerIndex, genes);
+                AddCollisionHandler(collisionHandler);
 
-                collisionBlockIndex = genes.FirstIndexOf<CollisionBlock>(collisionBlockIndex + collisionBlock.BlockLength);
+                collisionHandlerIndex = genes.FirstIndexOf<IHandleCollisions>(collisionHandlerIndex + collisionHandler.BlockLength + 1);
             }
         }
 
@@ -124,7 +117,7 @@ namespace Cells.GameObjects
                 updateBlock.ReadGenes(updateBlockIndex, genes);
                 _updateBlocks.Add(updateBlock);
 
-                updateBlockIndex = genes.FirstIndexOf<UpdateBlock>(updateBlockIndex + updateBlock.BlockLength);
+                updateBlockIndex = genes.FirstIndexOf<UpdateBlock>(updateBlockIndex + updateBlock.BlockLength + 1);
             }
         }
 
@@ -193,10 +186,12 @@ namespace Cells.GameObjects
         public override void HandleCollision(GameObject other, float deltaTime)
         {
             if (_collisionHandlers.ContainsKey(other.GetType()))
-                _collisionHandlers[other.GetType()].HandleCollision(this, other, deltaTime);
-
-            foreach (var collisionBlock in _collisionBlocks)
-                collisionBlock.Update(this, deltaTime);
+            {
+                foreach (var collisionHandler in _collisionHandlers[other.GetType()])
+                {
+                    collisionHandler.HandleCollision(this, other, deltaTime);
+                }
+            }
         }
 
         public void GiveEnergy(float amount)
@@ -237,6 +232,12 @@ namespace Cells.GameObjects
                 return (T)Memory[key];
 
             return default(T);
+        }
+
+        public void Forget(byte key)
+        {
+            if (Memory.ContainsKey(key))
+                Memory.Remove(key);
         }
     }
 }
