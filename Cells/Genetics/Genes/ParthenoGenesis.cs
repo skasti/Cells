@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
 using Microsoft.Xna.Framework;

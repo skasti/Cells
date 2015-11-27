@@ -1,15 +1,13 @@
-﻿using System.Security.Cryptography;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Cells.Genetics;
 using Cells.Genetics.Genes;
 using Cells.Genetics.GeneTypes;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Cells
+namespace Cells.GameObjects
 {
     public class Organism: GameObject
     {
@@ -57,12 +55,12 @@ namespace Cells
  
         public Organism()
         {
-            Position = new Vector2(Game1.r.Next(Game1.Width), Game1.r.Next(Game1.Height));
+            Position = new Vector2(Game1.Random.Next(Game1.Width), Game1.Random.Next(Game1.Height));
             Velocity = Vector2.Zero;
             Energy = 500;
             Color = Color.RoyalBlue;
             Energy = 500;
-            BaseMetabolicRate = 1f;
+            BaseMetabolicRate = 10f;
             MovementMetabolicRate = 0.03f;
         }
 
@@ -106,8 +104,9 @@ namespace Cells
             while (collisionBlockIndex >= 0)
             {
                 var collisionBlock = genes[collisionBlockIndex] as CollisionBlock;
+                if (collisionBlock == null) continue;
+                
                 collisionBlock.ReadGenes(collisionBlockIndex, genes);
-
                 _collisionBlocks.Add(collisionBlock);
 
                 collisionBlockIndex = genes.FirstIndexOf<CollisionBlock>(collisionBlockIndex + collisionBlock.BlockLength);
@@ -120,8 +119,9 @@ namespace Cells
             while (updateBlockIndex >= 0)
             {
                 var updateBlock = genes[updateBlockIndex] as UpdateBlock;
+                if (updateBlock == null) continue;
+                
                 updateBlock.ReadGenes(updateBlockIndex, genes);
-
                 _updateBlocks.Add(updateBlock);
 
                 updateBlockIndex = genes.FirstIndexOf<UpdateBlock>(updateBlockIndex + updateBlock.BlockLength);
@@ -174,9 +174,9 @@ namespace Cells
 
             if (Energy > 0f)
             {
-                var speed = Velocity.Length();
+                var force = Force.Length();
                 var radius = Radius;
-                Energy -= speed*radius*MovementMetabolicRate*deltaTime;
+                Energy -= force*MovementMetabolicRate*deltaTime;
             }
 
             if (Energy < 0f)
@@ -187,7 +187,7 @@ namespace Cells
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Game1.circle, Bounds, Color);
+            spriteBatch.Draw(Game1.Circle, Bounds, Color);
         }
         
         public override void HandleCollision(GameObject other, float deltaTime)
@@ -219,6 +219,24 @@ namespace Cells
             }
 
             return taken;
+        }
+
+        public void Remember(byte key, object item)
+        {
+            if (Memory.ContainsKey(key))
+                Memory[key] = item;
+            else Memory.Add(key, item);
+        }
+
+        public T Remember<T>(byte key)
+        {
+            if (!Memory.ContainsKey(key))
+                return default(T);
+
+            if (Memory[key] is T)
+                return (T)Memory[key];
+
+            return default(T);
         }
     }
 }

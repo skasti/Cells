@@ -1,12 +1,7 @@
-﻿using System.Linq.Expressions;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace Cells
+namespace Cells.GameObjects
 {
     public abstract class GameObject
     {
@@ -14,6 +9,7 @@ namespace Cells
         public Vector2 Velocity { get; set; }
         public Vector2 Acceleration { get; set; }
         public Vector2 Force { get; set; }
+        public Vector2 ExternalForce { get; set; }
         
         public virtual float Mass { get; protected set; }
         public abstract Rectangle Bounds { get; }
@@ -56,10 +52,10 @@ namespace Cells
 
         protected virtual void CalculatePhysics(float deltaTime)
         {
-            Acceleration = Force/Mass;
-            Force = -Velocity;
+            Acceleration = Force/Mass + ExternalForce/Mass;
             Velocity += Acceleration*deltaTime;
             Position += Velocity*deltaTime;
+            ExternalForce = ((-Velocity*Mass)/deltaTime)*0.002f;
         }
 
         public virtual void Die(bool remove)

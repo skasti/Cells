@@ -1,4 +1,5 @@
-﻿using Cells.Genetics.Exceptions;
+﻿using Cells.GameObjects;
+using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
 
 namespace Cells.Genetics.Genes

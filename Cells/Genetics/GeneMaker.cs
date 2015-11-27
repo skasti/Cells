@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Cells.Genetics.GeneTypes;
+﻿using Cells.Genetics.GeneTypes;
 
 namespace Cells.Genetics
 {

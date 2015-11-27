@@ -1,4 +1,6 @@
-﻿namespace Cells.Genetics.GeneTypes
+﻿using Cells.GameObjects;
+
+namespace Cells.Genetics.GeneTypes
 {
     public interface ICanUpdate
     {

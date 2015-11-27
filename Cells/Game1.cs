@@ -4,8 +4,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Cells
 {
@@ -14,20 +12,20 @@ namespace Cells
     /// </summary>
     public class Game1 : Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
+        readonly GraphicsDeviceManager _graphics;
+        SpriteBatch _spriteBatch;
 
         public static int Width = 1280;
         public static int Height = 720;
 
-        public static Texture2D circle, virus, sprint;
+        public static Texture2D Circle, Virus, Sprint;
 
-        public static Random r;
+        public static Random Random;
 
         public Game1()
         {
-            r = new Random((int)DateTime.Now.Ticks);
-            graphics = new GraphicsDeviceManager(this);
+            Random = new Random((int)DateTime.Now.Ticks);
+            _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
         }
 
@@ -39,10 +37,10 @@ namespace Cells
         /// </summary>
         protected override void Initialize()
         {
-            graphics.PreferredBackBufferWidth = Width;  // set this value to the desired width of your window
-            graphics.PreferredBackBufferHeight = Height;   // set this value to the desired height of your window
-            graphics.IsFullScreen = false;
-            graphics.ApplyChanges();
+            _graphics.PreferredBackBufferWidth = Width;  // set this value to the desired width of your window
+            _graphics.PreferredBackBufferHeight = Height;   // set this value to the desired height of your window
+            _graphics.IsFullScreen = false;
+            _graphics.ApplyChanges();
 
             base.Initialize();
         }
@@ -54,19 +52,19 @@ namespace Cells
         protected override void LoadContent()
         {
             // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch(GraphicsDevice);
-            circle = Content.Load<Texture2D>("circle");
-            virus = Content.Load<Texture2D>("virus");
-            sprint = Content.Load<Texture2D>("sprint");
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            Circle = Content.Load<Texture2D>("circle");
+            Virus = Content.Load<Texture2D>("virus");
+            Sprint = Content.Load<Texture2D>("sprint");
 
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 50; i++)
             {
                 ObjectManager.Instance.Add(new Organism(new DNA(50, 200)));
             }
 
             for (int i = 0; i < 100; i++)
             {
-                ObjectManager.Instance.Add(new Food(new Vector2(r.Next(Width), r.Next(Height)), r.Next(10, 100)));
+                ObjectManager.Instance.Add(new Food(new Vector2(Random.Next(Width), Random.Next(Height)), Random.Next(10, 100)));
             }
 
             // TODO: use this.Content to load your game content here
@@ -81,8 +79,8 @@ namespace Cells
             // TODO: Unload any non ContentManager content here
         }
 
-        float spawnRate = 5f;
-        float spawnTime = 1f;
+        private const float SpawnRate = 10f;
+        float _spawnTime = 1f;
 
         /// <summary>
         /// Allows the game to run logic such as updating the world,
@@ -94,15 +92,19 @@ namespace Cells
             if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
                 Exit();
 
-            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-            spawnTime -= deltaTime;
+            _spawnTime -= deltaTime;
 
-            if (spawnTime < 0f)
+            if (_spawnTime < 0f)
             {
-                ObjectManager.Instance.Add(new Food(new Vector2(r.Next(Width), r.Next(Height)), r.Next(10, 100)));
+                if (ObjectManager.Instance.Count<Food>() < 100)
+                    ObjectManager.Instance.Add(new Food(new Vector2(Random.Next(Width), Random.Next(Height)), Random.Next(10, 100)));
+                
+                if (ObjectManager.Instance.Count<Organism>() < 50)
+                    ObjectManager.Instance.Add(new Organism(new DNA(50, 200)));
                 //Spawn
-                spawnTime = spawnRate;
+                _spawnTime = SpawnRate;
             }
 
             ObjectManager.Instance.Update(deltaTime);
@@ -120,7 +122,7 @@ namespace Cells
         {
             GraphicsDevice.Clear(Color.White);
 
-            ObjectManager.Instance.Draw(spriteBatch);
+            ObjectManager.Instance.Draw(_spriteBatch);
 
             base.Draw(gameTime);
         }

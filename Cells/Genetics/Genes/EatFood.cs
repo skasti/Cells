@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Cells.GameObjects;
-using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
 
 namespace Cells.Genetics.Genes
@@ -25,18 +21,25 @@ namespace Cells.Genetics.Genes
 
         public Type CollidesWith { get { return typeof (Food); }}
 
-        public int HandleCollision(Organism self, GameObject other, float deltaTime)
+        public void HandleCollision(Organism self, GameObject other, float deltaTime)
         {
             if (!(other is Food))
-                return 0;
+                return;
 
             if (other.Dead)
-                return 0;
+                return;
 
-            self.GiveEnergy((other as Food).Energy);
-            other.Die(true);
+            var distance = (self.Position - other.Position).Length();
 
-            return 0;
+            if (distance < self.Radius)
+            {
+                self.GiveEnergy((other as Food).Energy);
+                other.Die(true);
+            }
+            else
+            {
+                self.Remember(0x10, other as Food);
+            }
         }
     }
 }

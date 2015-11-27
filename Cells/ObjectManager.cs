@@ -1,20 +1,18 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Cells.GameObjects;
 using Microsoft.Xna.Framework.Graphics;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Cells
 {
     public class ObjectManager
     {
-        static ObjectManager _instance = new ObjectManager();
+        static readonly ObjectManager _instance = new ObjectManager();
         public static ObjectManager Instance { get { return _instance; } }
 
-        private List<GameObject> _gameObjects = new List<GameObject>();
-        private List<GameObject> _addQueue = new List<GameObject>();
-        private List<GameObject> _removeQueue = new List<GameObject>();
+        private readonly List<GameObject> _gameObjects = new List<GameObject>();
+        private readonly List<GameObject> _addQueue = new List<GameObject>();
+        private readonly List<GameObject> _removeQueue = new List<GameObject>();
 
         public void Add(GameObject gameObject)
         {
@@ -65,6 +63,11 @@ namespace Cells
         public IEnumerable<T> GetObjectsWithinRange<T>(GameObject self, float range) where T : GameObject
         {
             return _gameObjects.Where(o => (o is T) && (o != self) && !_removeQueue.Contains(o) && ((self.Position - o.Position).Length() < range)).Cast<T>();
+        }
+
+        public int Count<T>() where T : GameObject
+        {
+            return _gameObjects.Count(go => go is T);
         }
     }
 }

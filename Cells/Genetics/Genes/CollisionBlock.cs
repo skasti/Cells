@@ -1,7 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
+using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
 
@@ -27,7 +25,7 @@ namespace Cells.Genetics.Genes
 
         public int BlockLength { get; private set; }
 
-        private readonly List<ICanUpdate> updates = new List<ICanUpdate>(); 
+        private readonly List<ICanUpdate> _updates = new List<ICanUpdate>(); 
 
         public CollisionBlock(int blockLength)
         {
@@ -48,15 +46,15 @@ namespace Cells.Genetics.Genes
                     continue;
 
                 if (genes[i] is ICanUpdate)
-                    updates.Add(genes[i] as ICanUpdate);
+                    _updates.Add(genes[i] as ICanUpdate);
             }
         }
 
         public int Update(Organism self, float deltaTime)
         {
-            for (int i = 0; i < updates.Count; i++)
+            for (int i = 0; i < _updates.Count; i++)
             {
-                i += updates[i].Update(self, deltaTime);
+                i += _updates[i].Update(self, deltaTime);
             }
 
             return 0;

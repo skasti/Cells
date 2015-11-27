@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
 using Cells.GameObjects;
 using Cells.Genetics.GeneTypes;
 
@@ -25,19 +21,25 @@ namespace Cells.Genetics.Genes
 
         public Type CollidesWith { get { return typeof (Organism); } }
 
-        public int HandleCollision(Organism self, GameObject other, float deltaTime)
+        public void HandleCollision(Organism self, GameObject other, float deltaTime)
         {
             if (!(other is Organism))
-                return 0;
+                return;
 
             var prey = other as Organism;
 
+            var distance = (self.Position - other.Position).Length();
+
+            if (distance > self.Radius)
+            {
+                self.Remember(0x10, prey);
+                return;
+            }
+
             if (prey.Radius > self.Radius)
-                return 0;
+                return;
 
             self.GiveEnergy(prey.TakeEnergy(self.Energy * deltaTime));
-
-            return 0;
         }
     }
 }

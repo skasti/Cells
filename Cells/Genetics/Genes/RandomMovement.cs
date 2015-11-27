@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
 using Microsoft.Xna.Framework;
@@ -39,7 +36,7 @@ namespace Cells.Genetics.Genes
 
             if (speed < DesiredSpeed)
             {
-                var direction = new Vector2((float)Game1.r.NextDouble()*2f - 1f,(float)Game1.r.NextDouble()*2f - 1f);
+                var direction = new Vector2((float)Game1.Random.NextDouble()*2f - 1f,(float)Game1.Random.NextDouble()*2f - 1f);
                 direction.Normalize();
                 direction *= DesiredSpeed * deltaTime;
 

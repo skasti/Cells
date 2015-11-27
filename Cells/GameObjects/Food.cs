@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Cells.GameObjects
@@ -29,7 +25,7 @@ namespace Cells.GameObjects
 
         public override void Draw(SpriteBatch spriteBatch)
         {
-            spriteBatch.Draw(Game1.circle, Bounds, Color.Fuchsia);
+            spriteBatch.Draw(Game1.Circle, Bounds, Color.Fuchsia);
         }
     }
 }
