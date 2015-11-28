@@ -68,7 +68,11 @@ namespace Cells
             for (int i = 0; i < 2; i++)
             {
                 ObjectManager.Instance.Add(new Organism(new DNA("programmed.txt")));
-                //ObjectManager.Instance.Add(new Organism(new DNA(10, 400)));
+            }
+
+            for (int i = 0; i < 5; i++)
+            {
+                ObjectManager.Instance.Add(new Organism(new DNA(20, 60)));
             }
 
             for (int i = 0; i < 50; i++)
@@ -88,7 +92,7 @@ namespace Cells
             // TODO: Unload any non ContentManager content here
         }
 
-        private const float SpawnRate = 0.1f;
+        private const float SpawnRate = 0.01f;
         float _spawnTime = 1f;
 
         /// <summary>
@@ -134,10 +138,13 @@ namespace Cells
                 if (ObjectManager.Instance.Count<Organism>() < 10)
                 {
 
-                    var dna = new DNA(20, 150);
+                    var dna = new DNA(20, 60);
 
                     if (_fittest != null)
-                        dna = new DNA(_fittest.DNA, dna);
+                    {
+                        var mate = organisms.FirstOrDefault(o => _fittest.DNA.RelatedPercent(o.DNA) > 0.2f);
+                        dna = new DNA(_fittest.DNA, mate != null ? mate.DNA : dna);
+                    }
 
                     ObjectManager.Instance.Add(new Organism(dna));
                 }

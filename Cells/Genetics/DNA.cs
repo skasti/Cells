@@ -8,7 +8,7 @@ namespace Cells.Genetics
 {
     public class DNA
     {
-        private const int MinimumFragmentLength = 10;
+        private const int MinimumFragmentLength = 2;
         private const float DefaultMutationRate = 0.001f;
 
         static Random _random;
@@ -32,12 +32,19 @@ namespace Cells.Genetics
 
         public DNA(int minLength, int maxLength)
         {
-            Data = new byte[minLength + Random.Next(maxLength - minLength)];
+            Data = CreateRandomFragment(minLength, maxLength);
+        }
 
-            for (int i = 0; i < Data.Length; i++)
+        private byte[] CreateRandomFragment(int minLength, int maxLength)
+        {
+            var fragment = new byte[minLength + Random.Next(maxLength - minLength)];
+
+            for (int i = 0; i < fragment.Length; i++)
             {
-                Data[i] = (byte)Random.Next(byte.MaxValue);
+                fragment[i] = (byte)Random.Next(byte.MaxValue);
             }
+
+            return fragment;
         }
 
         public DNA(params DNA[] parents)
@@ -46,18 +53,18 @@ namespace Cells.Genetics
 
             if (numParents < 1)
                 throw new NotEnoughParentDNAException();
+            
+            var fragments = new List<byte[]>();
 
             if (numParents == 1)
             {
-                Data = parents[0].GetFragment(0, parents[0].Size);
+                fragments.Add(parents[0].GetFragment(0, parents[0].Size));
             }
             else
             {
                 var orderedParents = parents.OrderBy(p => p.Data.Length).ToList();
 
                 var numSplits = numParents - 1;
-
-                var fragments = new List<byte[]>();
 
                 var largestParent = orderedParents.Last().Data.Length;
 
@@ -80,9 +87,12 @@ namespace Cells.Genetics
 
                 if (orderedParents.Count > 1)
                     fragments.Add(orderedParents.Last().GetFragment(lastSplit, orderedParents.Last().Size - 1));
-
-                Data = fragments.Join().ToArray();
             }
+
+            if (Random.NextDouble() < DefaultMutationRate)
+                fragments.Add(CreateRandomFragment(MinimumFragmentLength, MinimumFragmentLength * 5));
+
+            Data = fragments.Join().ToArray();
         }
 
         public byte[] GetFragment(int start, int end, float mutationRate = DefaultMutationRate)

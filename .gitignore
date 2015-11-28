@@ -2,3 +2,5 @@ Cells/bin/
 Cells/obj/
 Cells/Content/bin/
 *.suo
+Cells/Content/obj/
+DNACoder/obj/
