@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cells", "Cells\Cells.csproj
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DNACoder", "DNACoder\DNACoder.csproj", "{EC41F72A-927A-4292-8FB9-0BC2A0A23463}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GenomeIDE", "GenomeIDE\GenomeIDE.csproj", "{37597707-2E4C-4546-B787-E6F10B3F3B63}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -37,6 +39,16 @@ Global
 		{EC41F72A-927A-4292-8FB9-0BC2A0A23463}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{EC41F72A-927A-4292-8FB9-0BC2A0A23463}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{EC41F72A-927A-4292-8FB9-0BC2A0A23463}.Release|x86.ActiveCfg = Release|Any CPU
+		{37597707-2E4C-4546-B787-E6F10B3F3B63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{37597707-2E4C-4546-B787-E6F10B3F3B63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{37597707-2E4C-4546-B787-E6F10B3F3B63}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{37597707-2E4C-4546-B787-E6F10B3F3B63}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{37597707-2E4C-4546-B787-E6F10B3F3B63}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{37597707-2E4C-4546-B787-E6F10B3F3B63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{37597707-2E4C-4546-B787-E6F10B3F3B63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{37597707-2E4C-4546-B787-E6F10B3F3B63}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{37597707-2E4C-4546-B787-E6F10B3F3B63}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{37597707-2E4C-4546-B787-E6F10B3F3B63}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
