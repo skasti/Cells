@@ -21,7 +21,7 @@ namespace Cells.Genetics.Genes
 
                 return new EatFood(
                     fragment[1].AsByte(0x10), 
-                    fragment[2].AsByte(0x20),
+                    fragment[2].AsByte(0x10),
                     fragment[3].AsByte(0x10),
                     fragment[3].AsByte(0x10));
             }
