@@ -11,7 +11,7 @@ namespace Cells.Genetics.Genes
         public class Maker : GeneMaker
         {
             public Maker()
-                : base(0xA3, 0xA4, 5)
+                : base(0xA4, 0xA4, 5)
             {
             }
 
