@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -7,12 +9,19 @@ using System.Threading.Tasks;
 
 namespace GenomeIDE
 {
-    public class DNA
+    public class DNA: IListSource, IEnumerable<byte>
     {
-        public DNA(string filename)
+        public DNA(string filename = null)
         {
-            var lines = File.ReadAllLines(filename);
-            _data = lines.Select(l => Convert.ToByte(l.Substring(0, 2), 16)).ToList();
+            if (filename != null)
+            {
+                var lines = File.ReadAllLines(filename);
+                _data = lines.Select(l => Convert.ToByte(l.Substring(0, 2), 16)).ToList();
+            }
+            else
+            {
+                _data = new List<byte>();
+            }
         }
 
         private readonly List<byte> _data;
@@ -72,6 +81,32 @@ namespace GenomeIDE
         public void Save(string filename)
         {
             File.WriteAllLines(filename, _data.Select(b => b.ToString("X2")));
+        }
+
+        public IList GetList()
+        {
+            return _data;
+        }
+
+        public bool ContainsListCollection { get { return true; } }
+        public IEnumerator<byte> GetEnumerator()
+        {
+            return _data.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return ((IEnumerable) _data).GetEnumerator();
+        }
+
+        public void RemoveAt(int index)
+        {
+            _data.RemoveAt(index);
+        }
+
+        public void Insert(int index, byte value)
+        {
+            _data.Insert(index, value);
         }
     }
 }

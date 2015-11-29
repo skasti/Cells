@@ -4,12 +4,19 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DNACoder;
 using Newtonsoft.Json;
 
 namespace GenomeIDE
 {
     public static class GeneLibrary
     {
+        static readonly JsonSerializerSettings SerializerSettings = new JsonSerializerSettings
+        {
+            TypeNameHandling = TypeNameHandling.Auto,
+            Binder = new TypeNameSerializationBinder("GenomeIDE.{0}, GenomeIDE"),
+        };
+
         static readonly List<Gene> Genes = new List<Gene>();
 
         public static List<Gene> List
@@ -34,17 +41,14 @@ namespace GenomeIDE
 
         public static void Save()
         {
-            File.WriteAllLines("GeneLibrary.dna", Genes.Select(JsonConvert.SerializeObject));
+            File.WriteAllText("GeneLibrary.genes", JsonConvert.SerializeObject(Genes, Formatting.Indented, SerializerSettings));
         }
 
         public static void Load()
         {
-            var lines = File.ReadAllLines("GeneLibrary.dna");
-            foreach (var line in lines)
-            {
-                var gene = JsonConvert.DeserializeObject<Gene>(line);
-                Add(gene);
-            }
+            var json = File.ReadAllText("GeneLibrary.genes");
+            var genes = JsonConvert.DeserializeObject<List<Gene>>(json, SerializerSettings);
+            genes.ForEach(Add);
         }
     }
 }

@@ -126,5 +126,10 @@ namespace Cells.Genetics
         {
             return Data.Compare(other.Data, samples);
         }
+
+        public void Save(string filename)
+        {
+            File.WriteAllLines(filename, Data.Select(b => b.ToString("X2")));
+        }
     }
 }

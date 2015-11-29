@@ -14,10 +14,15 @@ namespace Cells.GameObjects
         public Dictionary<byte, object> Memory = new Dictionary<byte, object>();
         public DNA DNA { get; private set; }
 
+        public float DistanceMoved { get; private set; }
+
+        public float MaxEnergy { get; set; }
         public float Energy { get; private set; }
         public float EnergyGiven { get; private set; }
         public float BaseMetabolicRate { get; set; }
         public float MovementMetabolicRate { get; set; }
+
+        public float MaxAge { get; set; }
 
         public Color Color { get; set; }
         public float Radius
@@ -62,7 +67,10 @@ namespace Cells.GameObjects
             Energy = 500;
             BaseMetabolicRate = 50f;
             MovementMetabolicRate = 0.03f;
-            TopSpeed = 500f;
+            TopSpeed = 100f;
+            MaxAge = 100f;
+            MaxEnergy = 10000f;
+            DistanceMoved = 0f;
         }
 
         public Organism(DNA dna, float energy, Vector2 position)
@@ -143,6 +151,9 @@ namespace Cells.GameObjects
 
             CalculateEnergyConsumption(deltaTime);
 
+            if (Age > MaxAge)
+                Die(true);
+
             if (Dead)
                 return;
 
@@ -151,6 +162,8 @@ namespace Cells.GameObjects
 
             if (Dead)
                 return;
+
+            DistanceMoved += (Velocity*deltaTime).Length();
 
             base.Update(deltaTime);
         }
@@ -191,6 +204,9 @@ namespace Cells.GameObjects
         {
             Energy += amount;
             EnergyGiven += amount;
+
+            if (Energy > MaxEnergy)
+                Energy = MaxEnergy;
         }
 
         public float TakeEnergy(float desiredAmount)

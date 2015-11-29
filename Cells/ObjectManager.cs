@@ -1,4 +1,5 @@
-﻿using Cells.GameObjects;
+﻿using System;
+using Cells.GameObjects;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,6 +9,11 @@ namespace Cells
 {
     public class ObjectManager
     {
+        static Dictionary<Type,int> ObjectLimit = new Dictionary<Type, int>
+        {
+            {typeof(Organism), 100}
+        };
+
         static readonly ObjectManager _instance = new ObjectManager();
         public static ObjectManager Instance { get { return _instance; } }
 
@@ -17,6 +23,12 @@ namespace Cells
 
         public void Add(GameObject gameObject)
         {
+            if (ObjectLimit.ContainsKey(gameObject.GetType()))
+            {
+                if (_gameObjects.Count(go => gameObject.GetType() == go.GetType()) >= ObjectLimit[gameObject.GetType()])
+                    return;
+            }
+
             if (!_gameObjects.Contains(gameObject) && !_addQueue.Contains(gameObject))
                 _addQueue.Add(gameObject);
         }

@@ -1,0 +1,228 @@
+[
+  {
+    "MarkerFrom": 0,
+    "MarkerTo": 2,
+    "ArgumentBytes": 1,
+    "Name": "break",
+    "Arguments": [
+      {"$type":"FloatArgument", "Name":"PercentToBreak", "Text":"How much velocity to shed", "MapFrom":"0.01", "MapTo":"1.0"}
+    ]
+  },
+  {
+    "MarkerFrom": 147,
+    "MarkerTo": 148,
+    "ArgumentBytes": 2,
+    "Name": "Avoid object",
+    "Arguments": [
+      {"$type":"ByteArgument", "Name":"TargetMemoryLocation", "Text":"MemoryLocation of object to avoid", "MapFrom":"0", "MapTo":"32"},
+      {"$type":"FloatArgument", "Name":"Speed", "Text":"Desired speed", "MapFrom":"1.0", "MapTo":"500.0"}
+    ]
+  },
+  {
+    "MarkerFrom": 144,
+    "MarkerTo": 146,
+    "ArgumentBytes": 2,
+    "Name": "Chase object",
+    "Arguments": [
+      {"$type":"ByteArgument", "Name":"TargetMemoryLocation", "Text":"MemoryLocation of object to chase", "MapFrom":"0", "MapTo":"32"},
+      {"$type":"FloatArgument", "Name":"Speed", "Text":"Desired speed", "MapFrom":"1.0", "MapTo":"500.0"}
+    ]
+  },
+  {
+    "MarkerFrom": 16,
+    "MarkerTo": 25,
+    "ArgumentBytes": 4,
+    "Name": "Eat food",
+    "Arguments": [
+      {"$type":"ByteArgument", "Name":"BlockLength", "Text":"Size of subscript", "MapFrom":"0", "MapTo":"16"},
+      {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"MemoryLocation of nearly missed Food", "MapFrom":"0", "MapTo":"16"},
+      {"$type":"ByteArgument", "Name":"TooFarSkip", "Text":"How far into subscript to skip if food is too far", "MapFrom":"0", "MapTo":"16"},
+      {"$type":"ByteArgument", "Name":"DeadSkip", "Text":"How far into subscript to skip if food is dead", "MapFrom":"0", "MapTo":"16"}
+    ]
+  },
+  {
+    "MarkerFrom": 32,
+    "MarkerTo": 33,
+    "ArgumentBytes": 6,
+    "Name": "Eat organism",
+    "Arguments": [
+      {"$type":"ByteArgument", "Name":"BlockLength", "Text":"Size of subscript", "MapFrom":"0", "MapTo":"16"},
+      {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"MemoryLocation of nearly missed Organism", "MapFrom":"0", "MapTo":"16"},
+      {"$type":"ByteArgument", "Name":"TooFarSkip", "Text":"How far into subscript to skip if organism is too far", "MapFrom":"0", "MapTo":"16"},
+      {"$type":"ByteArgument", "Name":"BiggerSkip", "Text":"How far into subscript to skip if organism is bigger", "MapFrom":"0", "MapTo":"16"},
+      {"$type":"ByteArgument", "Name":"SampleSize", "Text":"How much DNA to sample for relation-test", "MapFrom":"0", "MapTo":"32"},
+      {"$type":"FloatArgument", "Name":"RelationThreshold", "Text":"How closely related can organism be", "MapFrom":"0.01", "MapTo":"1.0"}
+    ]
+  },
+  {
+    "MarkerFrom": 128,
+    "MarkerTo": 143,
+    "ArgumentBytes": 4,
+    "Name": "ParthenoGenesis",
+    "Arguments": [
+      {"$type":"FloatArgument", "Name":"EnergyThreshold", "Text":"How much energy is required", "MapFrom":"500.0", "MapTo":"5000.0"},
+      {"$type":"FloatArgument", "Name":"ChildSize", "Text":"How big is child (relative)", "MapFrom":"0.1", "MapTo":"0.5"},
+      {"$type":"ByteArgument", "Name":"BirthSkip", "Text":"How far into subscript to skip if birth", "MapFrom":"0", "MapTo":"16"},
+      {"$type":"ByteArgument", "Name":"DefaultSkip", "Text":"Default skip", "MapFrom":"0", "MapTo":"16"}
+    ]
+  },
+  {
+    "MarkerFrom": 112,
+    "MarkerTo": 127,
+    "ArgumentBytes": 1,
+    "Name": "Random Movement",
+    "Arguments": [
+      {"$type":"FloatArgument", "Name":"DesiredSpeed", "Text":"-", "MapFrom":"20.0", "MapTo":"500.0"}
+    ]
+  },
+  {
+    "MarkerFrom": 48,
+    "MarkerTo": 56,
+    "ArgumentBytes": 4,
+    "Name": "Set color (Trait and Behaviour)",
+    "Arguments": [
+      {"$type":"FloatArgument", "Name":"R", "Text":"Red", "MapFrom":"0.0", "MapTo":"1.0"},
+      {"$type":"FloatArgument", "Name":"G", "Text":"Green", "MapFrom":"0.0", "MapTo":"1.0"},
+      {"$type":"FloatArgument", "Name":"B", "Text":"Blue", "MapFrom":"0.0", "MapTo":"1.0"},
+      {"$type":"FloatArgument", "Name":"A", "Text":"Alpha", "MapFrom":"0.5", "MapTo":"1.0"}
+    ]
+  },
+  {
+    "MarkerFrom": 57,
+    "MarkerTo": 63,
+    "ArgumentBytes": 1,
+    "Name": "Set top speed  (Trait and Behaviour)",
+    "Arguments": [
+      {"$type":"FloatArgument", "Name":"TopSpeed", "Text":"-", "MapFrom":"50.0", "MapTo":"500.0"}
+    ]
+  },
+  {
+    "MarkerFrom": 64,
+    "MarkerTo": 69,
+    "ArgumentBytes": 5,
+    "Name": "Smooth color change",
+    "Arguments": [
+      {"$type":"FloatArgument", "Name":"R", "Text":"Red", "MapFrom":"0.0", "MapTo":"1.0"},
+      {"$type":"FloatArgument", "Name":"G", "Text":"Green", "MapFrom":"0.0", "MapTo":"1.0"},
+      {"$type":"FloatArgument", "Name":"B", "Text":"Blue", "MapFrom":"0.0", "MapTo":"1.0"},
+      {"$type":"FloatArgument", "Name":"A", "Text":"Alpha", "MapFrom":"0.5", "MapTo":"1.0"},
+      {"$type":"FloatArgument", "Name":"ChangeTime", "Text":"Time required to change", "MapFrom":"0.01", "MapTo":"10.0"}
+    ]
+  },
+  {
+    "MarkerFrom": 160,
+    "MarkerTo": 162,
+    "ArgumentBytes": 4,
+    "Name": "Track food",
+    "Arguments": [
+      {"$type":"FloatArgument", "Name":"Range", "Text":"-", "MapFrom":"10.0", "MapTo":"500.0"},
+      {"$type":"ByteArgument", "Name":"Capacity", "Text":"Number of targets that can be tracked", "MapFrom":"1", "MapTo":"16"},
+      {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"Starting MemoryLocation for storing targets", "MapFrom":"0", "MapTo":"16"},
+      {"$type":"ByteArgument", "Name":"NoTargetSkip", "Text":"Skip if no targets found", "MapFrom":"0", "MapTo":"16"}
+    ]
+  },
+  {
+    "MarkerFrom": 164,
+    "MarkerTo": 164,
+    "ArgumentBytes": 4,
+    "Name": "Track organisms",
+    "Arguments": [
+      {"$type":"FloatArgument", "Name":"Range", "Text":"-", "MapFrom":"10.0", "MapTo":"500.0"},
+      {"$type":"ByteArgument", "Name":"Capacity", "Text":"Number of targets that can be tracked", "MapFrom":"1", "MapTo":"16"},
+      {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"Starting MemoryLocation for storing targets", "MapFrom":"0", "MapTo":"16"},
+      {"$type":"ByteArgument", "Name":"NoTargetSkip", "Text":"Skip if no targets found", "MapFrom":"0", "MapTo":"16"}
+    ]
+  },
+  {
+    "MarkerFrom": 80,
+    "MarkerTo": 81,
+    "ArgumentBytes": 1,
+    "Name": "UpdateBlock",
+    "Arguments": [
+      {"$type":"ByteArgument", "Name":"BlockLength", "Text":"Number of genes to include", "MapFrom":"0", "MapTo":"255"}      
+    ]
+  },
+  {
+    "MarkerFrom": 4,
+    "MarkerTo": 4,
+    "ArgumentBytes": 2,
+    "Name": "Memory set",
+    "Arguments": [
+      {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"-", "MapFrom":"0", "MapTo":"255"},
+      {"$type":"ByteArgument", "Name":"Value", "Text":"Value to set [MemoryLocation] to", "MapFrom":"0", "MapTo":"255"}
+    ]
+  },
+  {
+    "MarkerFrom": 5,
+    "MarkerTo": 5,
+    "ArgumentBytes": 2,
+    "Name": "Memory add",
+    "Arguments": [
+      {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"-", "MapFrom":"0", "MapTo":"255"},
+      {"$type":"ByteArgument", "Name":"Value", "Text":"Value to add to [MemoryLocation]", "MapFrom":"0", "MapTo":"255"}
+    ]
+  },
+  {
+    "MarkerFrom": 6,
+    "MarkerTo": 6,
+    "ArgumentBytes": 2,
+    "Name": "Memory subtract",
+    "Arguments": [
+      {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"-", "MapFrom":"0", "MapTo":"255"},
+      {"$type":"ByteArgument", "Name":"Value", "Text":"Value to subtract from [MemoryLocation]", "MapFrom":"0", "MapTo":"255"}
+    ]
+  },
+  {
+    "MarkerFrom": 3,
+    "MarkerTo": 3,
+    "ArgumentBytes": 1,
+    "Name": "Skip",
+    "Arguments": [
+      {"$type":"ByteArgument", "Name":"SkipLength", "Text":"-", "MapFrom":"0", "MapTo":"16"}
+    ]
+  },
+  {
+    "MarkerFrom": 7,
+    "MarkerTo": 7,
+    "ArgumentBytes": 1,
+    "Name": "Skip if equals",
+    "Arguments": [
+      {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"-", "MapFrom":"0", "MapTo":"255"},
+      {"$type":"ByteArgument", "Name":"Value", "Text":"Value to compare with [MemoryLocation]", "MapFrom":"0", "MapTo":"255"},
+      {"$type":"ByteArgument", "Name":"SkipLength", "Text":"-", "MapFrom":"0", "MapTo":"16"}
+    ]
+  },
+  {
+    "MarkerFrom": 8,
+    "MarkerTo": 8,
+    "ArgumentBytes": 1,
+    "Name": "Skip if not equals",
+    "Arguments": [
+      {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"-", "MapFrom":"0", "MapTo":"255"},
+      {"$type":"ByteArgument", "Name":"Value", "Text":"Value to compare with [MemoryLocation]", "MapFrom":"0", "MapTo":"255"},
+      {"$type":"ByteArgument", "Name":"SkipLength", "Text":"-", "MapFrom":"0", "MapTo":"16"}
+    ]
+  },
+  {
+    "MarkerFrom": 10,
+    "MarkerTo": 10,
+    "ArgumentBytes": 1,
+    "Name": "Skip if less than",
+    "Arguments": [
+      {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"-", "MapFrom":"0", "MapTo":"255"},
+      {"$type":"ByteArgument", "Name":"Value", "Text":"Value to compare with [MemoryLocation]", "MapFrom":"0", "MapTo":"255"},
+      {"$type":"ByteArgument", "Name":"SkipLength", "Text":"-", "MapFrom":"0", "MapTo":"16"}
+    ]
+  },
+  {
+    "MarkerFrom": 9,
+    "MarkerTo": 9,
+    "ArgumentBytes": 1,
+    "Name": "Skip if greater than",
+    "Arguments": [
+      {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"-", "MapFrom":"0", "MapTo":"255"},
+      {"$type":"ByteArgument", "Name":"Value", "Text":"Value to compare with [MemoryLocation]", "MapFrom":"0", "MapTo":"255"},
+      {"$type":"ByteArgument", "Name":"SkipLength", "Text":"-", "MapFrom":"0", "MapTo":"16"}
+    ]
+  }
+]

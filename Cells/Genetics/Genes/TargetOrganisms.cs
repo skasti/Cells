@@ -46,7 +46,7 @@ namespace Cells.Genetics.Genes
             if (Game1.Debug == self)
                 Debug.WriteLine("[TargetOrganisms] " + _targetingRange);
 
-            var organismsInRange = ObjectManager.Instance.GetObjectsWithinRange<Organism>(self, _targetingRange)
+            var organismsInRange = ObjectManager.Instance.GetObjectsWithinRange<Organism>(self, _targetingRange).Where(t => t.Radius < self.Radius)
                 .OrderBy(self.Distance).ToList();
 
             if (Game1.Debug == self)

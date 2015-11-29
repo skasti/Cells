@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
+using System.IO;
 
 namespace Cells
 {
@@ -67,10 +68,12 @@ namespace Cells
 
             for (int i = 0; i < 2; i++)
             {
-                ObjectManager.Instance.Add(new Organism(new DNA("programmed.txt")));
+                ObjectManager.Instance.Add(new Organism(new DNA("prey.txt")));
+                ObjectManager.Instance.Add(new Organism(new DNA("predator.txt")));
+                ObjectManager.Instance.Add(new Organism(new DNA("predator.txt")));
             }
 
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 2; i++)
             {
                 ObjectManager.Instance.Add(new Organism(new DNA(20, 60)));
             }
@@ -89,7 +92,15 @@ namespace Cells
         /// </summary>
         protected override void UnloadContent()
         {
-            // TODO: Unload any non ContentManager content here
+            if (!Directory.Exists("Genomes"))
+                Directory.CreateDirectory("Genomes");
+
+            var genomes = ObjectManager.Instance.GetObjects<Organism>().OrderByDescending(o => (o.EnergyGiven + o.DistanceMoved)).Select(o => o.DNA).ToList();
+
+            for (int i = 0; i < genomes.Count; i++)
+            {
+                genomes[i].Save("Genomes\\Genome_" + i + ".dna");
+            }
         }
 
         private const float SpawnRate = 0.01f;
@@ -116,7 +127,7 @@ namespace Cells
 
             _spawnTime -= deltaTime;
 
-            var organisms = ObjectManager.Instance.GetObjects<Organism>().OrderByDescending(o => o.EnergyGiven).ToList();
+            var organisms = ObjectManager.Instance.GetObjects<Organism>().OrderByDescending(o => (o.EnergyGiven + o.DistanceMoved)).ToList();
 
             if ((_fittest == null) && (organisms.Count > 1))
             {
@@ -124,9 +135,10 @@ namespace Cells
             }
             else if (organisms.Count > 1)
             {
-                if (organisms[0].EnergyGiven > _fittest.EnergyGiven)
+                if (organisms[0].EnergyGiven + organisms[0].DistanceMoved > _fittest.EnergyGiven + _fittest.DistanceMoved)
                 {
                     _fittest = organisms[0];
+                    _fittest.DNA.Save("fittest.dna");
                 }
             }
 
@@ -137,12 +149,11 @@ namespace Cells
 
                 if (ObjectManager.Instance.Count<Organism>() < 10)
                 {
-
-                    var dna = new DNA(20, 60);
-
+                    var dna = new DNA(30,100);
+                    
                     if (_fittest != null)
                     {
-                        var mate = organisms.FirstOrDefault(o => _fittest.DNA.RelatedPercent(o.DNA) > 0.2f);
+                        var mate = organisms.FirstOrDefault(o => _fittest.DNA.RelatedPercent(o.DNA) > 0.5f);
                         dna = new DNA(_fittest.DNA, mate != null ? mate.DNA : dna);
                     }
 
@@ -158,7 +169,7 @@ namespace Cells
             if (Debug != null)
                 Window.Title = "Debugging: " + Debug.Position;
             else if (_fittest != null)
-                Window.Title = "Fittest: " + _fittest.EnergyGiven;
+                Window.Title = "Fittest: " + (_fittest.EnergyGiven + _fittest.DistanceMoved);
 
             base.Update(gameTime);
         }
