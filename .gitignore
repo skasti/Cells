@@ -4,3 +4,7 @@ Cells/Content/bin/
 *.suo
 Cells/Content/obj/
 DNACoder/obj/
+GenomeIDE/obj/
+GenomeIDE/bin/
+packages/
+DNACoder/bin/
