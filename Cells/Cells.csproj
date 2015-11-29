@@ -51,7 +51,7 @@
     <Compile Include="Genetics\Genes\AvoidObject.cs" />
     <Compile Include="Genetics\Genes\ChaseObject.cs" />
     <Compile Include="Genetics\Genes\CollisionHandler.cs" />
-    <Compile Include="Genetics\Genes\Programming\Goto.cs" />
+    <Compile Include="Genetics\Genes\Programming\Skip.cs" />
     <Compile Include="Genetics\Genes\Programming\MemorySubtract.cs" />
     <Compile Include="Genetics\Genes\Programming\MemoryAdd.cs" />
     <Compile Include="Genetics\Genes\Programming\MemorySet.cs" />

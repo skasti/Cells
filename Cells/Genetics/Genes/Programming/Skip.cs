@@ -5,7 +5,7 @@ using Cells.Genetics.GeneTypes;
 
 namespace Cells.Genetics.Genes.Programming
 {
-    public class Goto: ICanUpdate
+    public class Skip: ICanUpdate
     {
         public class Maker : GeneMaker
         {
@@ -19,13 +19,13 @@ namespace Cells.Genetics.Genes.Programming
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
-                return new Goto(fragment[1].AsByte(0x10));
+                return new Skip(fragment[1].AsByte(0x10));
             }
         }
 
         private readonly byte _jumpSize;
 
-        public Goto(byte jumpSize)
+        public Skip(byte jumpSize)
         {
             _jumpSize = jumpSize;
         }
