@@ -19,7 +19,9 @@ namespace Cells.Genetics.Genes
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
-                return new AvoidObject(fragment[1].AsByte(0x20), fragment[2].AsFloat(1f, 500f));
+                return new AvoidObject(
+                    fragment[1].AsByte(0x20), 
+                    fragment[2].AsFloat(1f, 500f));
             }
         }
 
