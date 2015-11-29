@@ -26,7 +26,7 @@ namespace Cells.Genetics
             new TargetOrganisms.Maker(),
             new AvoidObject.Maker(),
 
-            new Goto.Maker(),
+            new Skip.Maker(),
             new MemorySet.Maker(),
             new MemoryAdd.Maker(),
             new MemorySubtract.Maker(),
