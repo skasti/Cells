@@ -42,6 +42,8 @@ namespace GenomeIDE
         private void UpdateDNAView()
         {
             DnaView.Nodes.Clear();
+            var nodes = DnaView.Nodes;
+
             var i = 0;
             while (i < DNA.Size)
             {
@@ -50,11 +52,14 @@ namespace GenomeIDE
 
                 if ((gene != null) && DNA.Size >= i + gene.Size)
                 {
-                    DnaView.Nodes.Add(gene.CreateNode(DNA.GetFragment(i, gene.Size)));
+                    var fragment = DNA.GetFragment(i, gene.Size);
+                    var node = gene.CreateNode(fragment);
+                    nodes.Add(node);
+
                     i += gene.ArgumentBytes;
                 }
                 else
-                    DnaView.Nodes.Add(new TreeNode(g.ToString("X2") + " (inactive)"));
+                    nodes.Add(new TreeNode(g.ToString("X2") + " (inactive)"));
 
                 i++;
             }

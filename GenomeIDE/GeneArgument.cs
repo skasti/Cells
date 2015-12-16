@@ -8,6 +8,7 @@ namespace GenomeIDE
 {
     public interface IGeneArgument
     {
+        string Name { get; }
         string Description { get; }
         string Calculate(byte input);
     }

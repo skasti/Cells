@@ -11,7 +11,7 @@ namespace Cells
     {
         static Dictionary<Type,int> ObjectLimit = new Dictionary<Type, int>
         {
-            {typeof(Organism), 100}
+            {typeof(Organism), 10}
         };
 
         static readonly ObjectManager _instance = new ObjectManager();

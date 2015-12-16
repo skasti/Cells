@@ -14,6 +14,14 @@ namespace Cells.GameObjects
         public Dictionary<byte, object> Memory = new Dictionary<byte, object>();
         public DNA DNA { get; private set; }
 
+        public float Fitness
+        {
+            get
+            {
+                return EnergyGiven * DistanceMoved * 0.001f;
+            }
+        }
+
         public float DistanceMoved { get; private set; }
 
         public float MaxEnergy { get; set; }
@@ -65,8 +73,8 @@ namespace Cells.GameObjects
             Energy = 500;
             Color = Color.RoyalBlue;
             Energy = 500;
-            BaseMetabolicRate = 50f;
-            MovementMetabolicRate = 0.03f;
+            BaseMetabolicRate = 60f;
+            MovementMetabolicRate = 0.05f;
             TopSpeed = 100f;
             MaxAge = 100f;
             MaxEnergy = 10000f;

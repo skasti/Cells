@@ -10,18 +10,21 @@ namespace GenomeIDE
 {
     public class Gene
     {
-        public Gene(byte markerFrom, byte markerTo, int argumentBytes, string name, List<IGeneArgument> arguments)
+        public Gene(byte markerFrom, byte markerTo, string name, List<IGeneArgument> arguments)
         {
             MarkerFrom = markerFrom;
             MarkerTo = markerTo;
-            ArgumentBytes = argumentBytes;
             Name = name;
             Arguments = arguments;
         }
 
         public byte MarkerFrom { get; private set; }
         public byte MarkerTo { get; private set; }
-        public int ArgumentBytes { get; private set; }
+
+        public int ArgumentBytes
+        {
+            get { return Arguments.Count; }
+        }
 
         public string Name { get; private set; }
         public List<IGeneArgument> Arguments { get; private set; }
@@ -36,7 +39,7 @@ namespace GenomeIDE
         {
             var fI = 0;
             var node = new TreeNode("{0:X2}: {1}".Inject(fragment[fI++], Name));
-
+            var argumentsNode = new TreeNode("Arguments");
             foreach (var argument in Arguments)
             {
                 var b = fragment[fI++];
@@ -46,8 +49,9 @@ namespace GenomeIDE
                 {
                     ToolTipText = argument.Description
                 };
-                node.Nodes.Add(child);
+                argumentsNode.Nodes.Add(child);
             }
+            node.Nodes.Add(argumentsNode);
 
             return node;
         }

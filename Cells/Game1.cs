@@ -73,6 +73,16 @@ namespace Cells
                 ObjectManager.Instance.Add(new Organism(new DNA("predator.txt")));
             }
 
+            if (Directory.Exists("Genomes"))
+            {
+                var files = Directory.GetFiles("Genomes", "*.dna");
+
+                foreach (var file in files)
+                {
+                    ObjectManager.Instance.Add(new Organism(new DNA(file)));
+                }
+            }
+
             for (int i = 0; i < 2; i++)
             {
                 ObjectManager.Instance.Add(new Organism(new DNA(20, 60)));
@@ -95,7 +105,7 @@ namespace Cells
             if (!Directory.Exists("Genomes"))
                 Directory.CreateDirectory("Genomes");
 
-            var genomes = ObjectManager.Instance.GetObjects<Organism>().OrderByDescending(o => (o.EnergyGiven + o.DistanceMoved)).Select(o => o.DNA).ToList();
+            var genomes = ObjectManager.Instance.GetObjects<Organism>().OrderByDescending(o => o.Fitness).Select(o => o.DNA).ToList();
 
             for (int i = 0; i < genomes.Count; i++)
             {
@@ -127,7 +137,7 @@ namespace Cells
 
             _spawnTime -= deltaTime;
 
-            var organisms = ObjectManager.Instance.GetObjects<Organism>().OrderByDescending(o => (o.EnergyGiven + o.DistanceMoved)).ToList();
+            var organisms = ObjectManager.Instance.GetObjects<Organism>().OrderByDescending(o => o.Fitness).ToList();
 
             if ((_fittest == null) && (organisms.Count > 1))
             {
@@ -135,7 +145,7 @@ namespace Cells
             }
             else if (organisms.Count > 1)
             {
-                if (organisms[0].EnergyGiven + organisms[0].DistanceMoved > _fittest.EnergyGiven + _fittest.DistanceMoved)
+                if (organisms[0].Fitness > _fittest.Fitness)
                 {
                     _fittest = organisms[0];
                     _fittest.DNA.Save("fittest.dna");
@@ -144,7 +154,7 @@ namespace Cells
 
             if (_spawnTime < 0f)
             {
-                if (ObjectManager.Instance.Count<Food>() < 150)
+                if (ObjectManager.Instance.Count<Food>() < 50)
                     ObjectManager.Instance.Add(new Food(new Vector2(Random.Next(Width), Random.Next(Height)), Random.Next(100, 500)));
 
                 if (ObjectManager.Instance.Count<Organism>() < 10)
@@ -169,7 +179,7 @@ namespace Cells
             if (Debug != null)
                 Window.Title = "Debugging: " + Debug.Position;
             else if (_fittest != null)
-                Window.Title = "Fittest: " + (_fittest.EnergyGiven + _fittest.DistanceMoved);
+                Window.Title = "Fittest: " + _fittest.Fitness;
 
             base.Update(gameTime);
         }

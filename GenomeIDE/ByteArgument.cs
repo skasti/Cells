@@ -28,8 +28,12 @@ namespace GenomeIDE
         }
         public string Calculate(byte input)
         {
-            var value = input.AsByte(MapTo, MapFrom);
-            return "0x{0:X2}".Inject(value);
+            return "0x{0:X2}".Inject(GetValue(input));
+        }
+
+        public byte GetValue(byte input)
+        {
+            return input.AsByte(MapTo, MapFrom);
         }
     }
 }

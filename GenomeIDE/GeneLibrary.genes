@@ -184,7 +184,7 @@
   {
     "MarkerFrom": 7,
     "MarkerTo": 7,
-    "ArgumentBytes": 1,
+    "ArgumentBytes": 3,
     "Name": "Skip if equals",
     "Arguments": [
       {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"-", "MapFrom":"0", "MapTo":"255"},
@@ -195,7 +195,7 @@
   {
     "MarkerFrom": 8,
     "MarkerTo": 8,
-    "ArgumentBytes": 1,
+    "ArgumentBytes": 3,
     "Name": "Skip if not equals",
     "Arguments": [
       {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"-", "MapFrom":"0", "MapTo":"255"},
@@ -206,7 +206,7 @@
   {
     "MarkerFrom": 10,
     "MarkerTo": 10,
-    "ArgumentBytes": 1,
+    "ArgumentBytes": 3,
     "Name": "Skip if less than",
     "Arguments": [
       {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"-", "MapFrom":"0", "MapTo":"255"},
@@ -217,7 +217,7 @@
   {
     "MarkerFrom": 9,
     "MarkerTo": 9,
-    "ArgumentBytes": 1,
+    "ArgumentBytes": 3,
     "Name": "Skip if greater than",
     "Arguments": [
       {"$type":"ByteArgument", "Name":"MemoryLocation", "Text":"-", "MapFrom":"0", "MapTo":"255"},
