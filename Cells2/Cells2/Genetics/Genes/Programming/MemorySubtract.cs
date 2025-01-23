@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
@@ -27,6 +28,10 @@ namespace Cells.Genetics.Genes.Programming
         }
         private readonly byte _value;
         private readonly byte _memoryLocation;
+        public float Cost { get; private set; } = 1f;
+        public string Name { get; } = "SUB";
+        public List<string> Log { get; } = new List<string>();
+        public int LogIndentLevel { get; set; } = 0;
 
         public MemorySubtract(byte memoryLocation, byte value)
         {
@@ -40,14 +45,17 @@ namespace Cells.Genetics.Genes.Programming
             var newValue = (byte)(currentValue - _value);
             self.Remember(_memoryLocation, newValue);
 
-            if (Game1.Debug == self)
-            {
-                Debug.WriteLine("[MEM][{0}] -= {1} ({2})",
-                    _memoryLocation.ToString("X2"),
-                    _value.ToString("X2"),
-                    newValue.ToString("X2"));
-            }
+            this.Log($"{ToString()} ({newValue})");
             return 0;
+        }
+
+        private string _string;
+        public override string ToString()
+        {
+            if (_string == null)
+                _string = $"SUB [{_memoryLocation:X2}x0] -= {_value}";
+
+            return _string;
         }
     }
 }

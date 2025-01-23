@@ -16,6 +16,8 @@ namespace Cells.Genetics
             new EatFood.Maker(),
             new EatOrganisms.Maker(),
             new SetColor.Maker(),
+            new SetBaseMetabolicRate.Maker(),
+            new SetMovementMetabolicRate.Maker(),
             new SetTopSpeed.Maker(),
             new SmoothColorChange.Maker(),
             new RandomMovement.Maker(),
@@ -80,9 +82,9 @@ namespace Cells.Genetics
                 {
                     var gene = maker.Make(dna.GetFragment(i, maker));
 
-                    if (Game1.Debug == null)
-                        Debug.WriteLine(String.Format("[{0}]", gene.GetType().Name));
-                    
+                    //if (Game1.Debug == null)
+                    //    Debug.WriteLine(String.Format("[{0}]", gene.GetType().Name));
+
                     genes.Add(gene);
                     i += maker.ArgumentBytes;
                 }

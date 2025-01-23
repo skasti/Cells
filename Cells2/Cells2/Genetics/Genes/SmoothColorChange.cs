@@ -1,4 +1,5 @@
-﻿using Cells.GameObjects;
+﻿using System.Collections.Generic;
+using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
 using Microsoft.Xna.Framework;
@@ -34,6 +35,10 @@ namespace Cells.Genetics.Genes
 
         private Vector4 _startColor;
         private float _timeUsed = -1f;
+        public float Cost { get; private set; } = 1f;
+        public string Name { get; } = "SMOOTH COLOR CHANGE";
+        public List<string> Log { get; } = new List<string>();
+        public int LogIndentLevel { get; set; } = 0;
 
         public SmoothColorChange(float red, float green, float blue, float alpha, float changeTime)
         {
@@ -43,6 +48,7 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
+            Cost = 0f;
             var currentColor = self.Color.ToVector4();
 
             if (currentColor == _targetColor)
@@ -52,6 +58,8 @@ namespace Cells.Genetics.Genes
 
                 return 0;
             }
+
+            Cost = 1f;
 
             if (_timeUsed < 0f)
                 Init(currentColor);
@@ -67,6 +75,8 @@ namespace Cells.Genetics.Genes
 
             self.Color = new Color(newColor);
 
+            this.Log($"SMOOTH COLOR CHANGE {_startColor} -> {_targetColor} ({_timeUsed}/{_changeTime}) = {newColor}");
+
             return 0;
         }
 
@@ -74,6 +84,15 @@ namespace Cells.Genetics.Genes
         {
             _startColor = currentColor;
             _timeUsed = 0f;
+        }
+
+        private Dictionary<int,string> _string = new Dictionary<int, string>();
+        public string ToString(int level = 0)
+        {
+            if (!_string.ContainsKey(level))
+                _string.Add(level, $"{this.Indent(level)}SmoothColorChange[{_startColor} -> {_targetColor}]");
+
+            return _string[level];
         }
     }
 }

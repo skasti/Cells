@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
@@ -20,7 +21,7 @@ namespace Cells.Genetics.Genes
                     throw new GenomeTooShortException();
 
                 return new EatFood(
-                    fragment[1].AsByte(0x10), 
+                    fragment[1].AsByte(0x10),
                     fragment[2].AsByte(0x10),
                     fragment[3].AsByte(0x10),
                     fragment[3].AsByte(0x10));
@@ -30,10 +31,12 @@ namespace Cells.Genetics.Genes
         private readonly byte _targetMemoryLocation;
         private readonly byte _tooFarGoto;
         private readonly byte _deadGoto;
+        public override string Name { get; } = "EAT FOOD";
 
         public EatFood(byte blockLength, byte targetMemoryLocation, byte tooFarGoto, byte deadGoto)
             :base(blockLength, typeof(Food))
         {
+            AllowMultiple = false;
             _targetMemoryLocation = targetMemoryLocation;
             _tooFarGoto = tooFarGoto;
             _deadGoto = deadGoto;
@@ -41,41 +44,44 @@ namespace Cells.Genetics.Genes
 
         public override void HandleCollision(Organism self, GameObject other, float deltaTime)
         {
-            if (Game1.Debug == self)
-                Debug.WriteLine("[EatFood][Collision] " + other.Position);
-
+            Cost = 0f;
+            this.Log($"[COLLISION] EAT FOOD {other.Position}",1);
             StartIndex = 0;
             var food = other as Food;
 
-            if (other.Alive)
+            if (!other.Alive)
             {
-                var distance = (self.Position - other.Position).Length();
+                this.Log($"is dead, skipping {_deadGoto}");
+                this.Log($"forget target [{_targetMemoryLocation:X2}x0]");
+                StartIndex = _deadGoto;
+                self.Forget(_targetMemoryLocation);
+                base.HandleCollision(self, other, deltaTime);
+                this.Log("done", -1);
+                return;
+            }
 
-                if (distance < self.Radius + other.Bounds.Width*0.5f)
-                {
-                    if (Game1.Debug == self)
-                        Debug.WriteLine("[EatFood][Eating]");
-                    self.GiveEnergy(food.Energy);
-                    other.Die(true);
-                }
-                else
-                {
-                    if (Game1.Debug == self)
-                        Debug.WriteLine("[EatFood][TooFar]");
-                    self.Remember(_targetMemoryLocation, food);
+            Cost += 1f;
 
-                    StartIndex = _tooFarGoto;
-                }
+            var distance = (self.Position - other.Position).Length();
+
+            if (distance < self.Radius + other.Bounds.Width*0.5f)
+            {
+                self.Status = "Eating";
+                var taken = food.TakeEnergy(self.Energy*deltaTime);
+                self.GiveEnergy(taken);
+                this.Log($"eating ({taken})");
             }
             else
             {
-                if (Game1.Debug == self)
-                    Debug.WriteLine("[EatFood][WasDead]");
-
-                StartIndex = _deadGoto;
+                this.Log($"too far, skipping {_tooFarGoto}");
+                this.Log($"remembering target [{_targetMemoryLocation:X2}x0]");
+                self.Remember(_targetMemoryLocation, food);
+                self.Status = "Not Eating - Too Far";
+                StartIndex = _tooFarGoto;
             }
 
             base.HandleCollision(self, other, deltaTime);
+            this.Log("done", -1);
         }
     }
 }

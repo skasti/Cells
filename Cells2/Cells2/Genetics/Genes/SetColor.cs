@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
@@ -29,7 +30,12 @@ namespace Cells.Genetics.Genes
             }
         }
 
+        public string Name { get; } = "COLOR";
+        public List<string> Log { get; } = new List<string>();
+        public int LogIndentLevel { get; set; } = 0;
+
         private readonly Color _color;
+        public float Cost { get; private set; } = 1f;
 
         public SetColor(float r, float g, float b, float a)
         {
@@ -43,11 +49,18 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            if (Game1.Debug == self)
-                Debug.WriteLine("[SetColor] " + _color);
-
+            this.Log($"SET COLOR = {_color}");
             self.Color = _color;
             return 0;
+        }
+
+        private Dictionary<int,string> _string = new Dictionary<int, string>();
+        public string ToString(int level = 0)
+        {
+            if (!_string.ContainsKey(level))
+                _string.Add(level, $"{this.Indent(level)}SetColor[{_color}]");
+
+            return _string[level];
         }
     }
 }

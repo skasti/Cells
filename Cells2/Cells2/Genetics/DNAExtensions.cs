@@ -48,19 +48,25 @@ namespace Cells.Genetics
         public static float Compare(this byte a, byte b)
         {
             var diff = Math.Abs(a - b);
-            return (float) diff/a;
+            if (diff == 0) return 1f;
+            return 1f - ((float)diff / (float)byte.MaxValue);
+            //return (float) diff/a;
         }
 
-        public static float Compare(this byte[] a, byte[] b, int numSamples = 5)
+        public static float Compare(this byte[] a, byte[] b, int numSamples = -1)
         {
             int maxIndex = Math.Min(a.Length, b.Length) - 1;
             float results = 0f;
 
+            if (numSamples < 0) {
+                numSamples = (int)(maxIndex * 0.75f);
+            }
+
             for (int i = 0; i < numSamples; i++)
             {
                 var index = Random.Next(maxIndex);
-
-                results += a[index].Compare(b[index]);
+                var subResult = a[index].Compare(b[index]);
+                results += subResult;
             }
 
             return results/numSamples;

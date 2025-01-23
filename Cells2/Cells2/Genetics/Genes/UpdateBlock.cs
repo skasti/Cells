@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.CodeDom.Compiler;
+using System.Collections.Generic;
+using System.Text;
 using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
@@ -10,7 +12,7 @@ namespace Cells.Genetics.Genes
         public class Maker : GeneMaker
         {
             public Maker()
-                : base(0x50, 0x51, 2)
+                : base(0x50, 0x5F, 2)
             {
             }
 
@@ -24,8 +26,12 @@ namespace Cells.Genetics.Genes
         }
 
         public int BlockLength { get; private set; }
+        public float Cost { get; private set; }
+        public string Name { get; } = "UPDATE BLOCK";
+        public List<string> Log { get; } = new List<string>();
+        public int LogIndentLevel { get; set; } = 0;
 
-        private readonly List<ICanUpdate> _updates = new List<ICanUpdate>(); 
+        private readonly List<ICanUpdate> _updates = new List<ICanUpdate>();
 
         public UpdateBlock(int blockLength)
         {
@@ -48,16 +54,30 @@ namespace Cells.Genetics.Genes
                 if (genes[i] is ICanUpdate)
                     _updates.Add(genes[i] as ICanUpdate);
             }
+
+            BlockLength = _updates.Count;
         }
 
         public int Update(Organism self, float deltaTime)
         {
+            Cost = 0f;
             for (int i = 0; i < _updates.Count; i++)
             {
-                i += _updates[i].Update(self, deltaTime);
+                var updater = _updates[i];
+                i += updater.Update(self, deltaTime);
+                Cost += updater.Cost;
             }
 
             return 0;
+        }
+
+        private string _string;
+        public override string ToString()
+        {
+            if (_string == null)
+                _string =$"UpdateBlock[{_updates.Count}]";
+
+            return _string;
         }
     }
 }

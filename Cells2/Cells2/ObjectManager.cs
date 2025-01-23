@@ -4,14 +4,21 @@ using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
+using Cells.QuadTree;
+using Cells.Geometry;
+using Rectangle = Cells.Geometry.Rectangle;
+using System.Diagnostics;
 
 namespace Cells
 {
     public class ObjectManager
     {
+        public Stopwatch UpdateStopwatch { get; } = new Stopwatch();
+        public Stopwatch CollisionStopwatch { get; } = new Stopwatch();
+        public Stopwatch DrawStopwatch { get; } = new Stopwatch();
         static Dictionary<Type,int> ObjectLimit = new Dictionary<Type, int>
         {
-            {typeof(Organism), 10}
+            {typeof(Organism), 500}
         };
 
         static readonly ObjectManager _instance = new ObjectManager();
@@ -21,16 +28,23 @@ namespace Cells
         private readonly List<GameObject> _addQueue = new List<GameObject>();
         private readonly List<GameObject> _removeQueue = new List<GameObject>();
 
-        public void Add(GameObject gameObject)
+        private readonly Node SearchTree = new Node(new Rectangle(Vector2.Zero, Game1.WorldBounds));
+
+        public bool Add(GameObject gameObject)
         {
             if (ObjectLimit.ContainsKey(gameObject.GetType()))
             {
-                if (_gameObjects.Count(go => gameObject.GetType() == go.GetType()) >= ObjectLimit[gameObject.GetType()])
-                    return;
+                if (_gameObjects.Count(go => gameObject.GetType() == go.GetType()) + _addQueue.Count(go => gameObject.GetType() == go.GetType()) >= ObjectLimit[gameObject.GetType()])
+                    return false;
             }
 
             if (!_gameObjects.Contains(gameObject) && !_addQueue.Contains(gameObject))
+            {
                 _addQueue.Add(gameObject);
+                return true;
+            }
+
+            return false;
         }
 
         public void Remove(GameObject gameObject)
@@ -41,16 +55,24 @@ namespace Cells
 
         public void Update(float deltaTime)
         {
+            UpdateStopwatch.Start();
             foreach (var obj in _gameObjects)
                 obj.Update(deltaTime);
+            UpdateStopwatch.Stop();
 
+            CollisionStopwatch.Start();
             CheckCollisions(deltaTime);
+            CollisionStopwatch.Stop();
 
             _gameObjects.AddRange(_addQueue);
+            SearchTree.AddRange(_addQueue);
             _addQueue.Clear();
 
             foreach (var oldObject in _removeQueue)
+            {
                 _gameObjects.Remove(oldObject);
+                SearchTree.Remove(oldObject);
+            }
 
             _removeQueue.Clear();
         }
@@ -59,9 +81,9 @@ namespace Cells
         {
             foreach (var gameObject in _gameObjects)
             {
-                _gameObjects
-                    .Where(o => o != gameObject && o.Bounds.Intersects(gameObject.Bounds))
-                    .ToList().ForEach(c => gameObject.HandleCollision(c, deltaTime));
+                var node = gameObject.CurrentNode ?? SearchTree;
+                node.FindObjects(gameObject.Bounds.Surround(4f, new Vector2(500,500)), o => o != gameObject && o.Bounds.Intersects(gameObject.Bounds))
+                    .ForEach(c => gameObject.HandleCollision(c, deltaTime));
             }
         }
 
@@ -75,7 +97,12 @@ namespace Cells
 
         public IEnumerable<T> GetObjectsWithinRange<T>(GameObject self, float range) where T : GameObject
         {
-            return _gameObjects.Where(o => (o is T) && (o != self) && !_removeQueue.Contains(o) && ((self.Position - o.Position).Length() < range)).Cast<T>();
+            var searchBounds = new Rectangle(
+                self.Position - (Vector2.One * range * 1.5f),
+                Vector2.One * range * 3f
+            );
+            var node = self.CurrentNode ?? SearchTree;
+            return node.FindObjects(searchBounds, o => (o is T) && (o != self) && !_removeQueue.Contains(o) && ((self.Position - o.Position).Length() < range)).Cast<T>();
         }
 
         public int Count<T>() where T : GameObject

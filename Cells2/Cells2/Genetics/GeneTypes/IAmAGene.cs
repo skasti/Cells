@@ -2,5 +2,7 @@
 {
     public interface IAmAGene
     {
+        string Name { get; }
+        string ToString();
     }
 }

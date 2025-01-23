@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
@@ -7,12 +7,12 @@ using Microsoft.Xna.Framework;
 
 namespace Cells.Genetics.Genes
 {
-    public class SetTopSpeed : ITrait, ICanUpdate
+    public class SetMovementMetabolicRate : ITrait, ICanUpdate
     {
         public class Maker : GeneMaker
         {
             public Maker()
-                : base(0x39, 0x3F, 2)
+                : base(0x48, 0x49, 2)
             {
             }
 
@@ -21,32 +21,28 @@ namespace Cells.Genetics.Genes
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
-                return new SetTopSpeed(
-                    fragment[1].AsFloat(50f, 500f)
-                    );
+                return new SetMovementMetabolicRate(fragment[1].AsFloat(0.0001f, 1f));
             }
         }
-
-        private readonly float _topSpeed;
+        private readonly float _rate;
         public float Cost { get; private set; } = 1f;
-        public string Name { get; } = "TOP SPEED";
+        public string Name { get; } = "MOVEMENT METABOLISM";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
 
-        public SetTopSpeed(float topSpeed)
-        {
-            _topSpeed = topSpeed;
+        public SetMovementMetabolicRate(float rate) {
+            _rate = rate;
         }
 
         public void Apply(Organism self)
         {
-            self.TopSpeed = _topSpeed;
+            self.MovementMetabolicRate = _rate;
         }
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log($"SET TOP SPEED = {_topSpeed}");
-            self.TopSpeed = _topSpeed;
+            this.Log($"SET MOVEMENT METABOLIC RATE = {_rate}");
+            self.MovementMetabolicRate = _rate;
             return 0;
         }
 
@@ -54,7 +50,7 @@ namespace Cells.Genetics.Genes
         public string ToString(int level = 0)
         {
             if (!_string.ContainsKey(level))
-                _string.Add(level, $"{this.Indent(level)}SetTopSpeed[{_topSpeed}]");
+                _string.Add(level, $"{this.Indent(level)}SetMovementMetabolicRate[{_rate}]");
 
             return _string[level];
         }

@@ -1,8 +1,10 @@
 30 SetColor
 FF R
 00 G
-00 B
+FF B
 FF A
+45 BaseMetabolicRate
+01
 39 SetTopSpeed
 80 TopSpeed
 50 UpdateBlock
@@ -41,7 +43,7 @@ A0 TargetFood
 02 SkipIfTooFar
 02 SkipIfBigger
 10 DnaSampleSize
-01 RelationThreshold
+F0 RelationThreshold
 40 SmoothColorChange
 00 R
 00 G

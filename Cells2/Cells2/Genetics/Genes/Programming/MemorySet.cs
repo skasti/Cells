@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
@@ -27,6 +28,10 @@ namespace Cells.Genetics.Genes.Programming
         }
         private readonly byte _value;
         private readonly byte _memoryLocation;
+        public float Cost { get; private set; } = 1f;
+        public string Name { get; } = "SET";
+        public List<string> Log { get; } = new List<string>();
+        public int LogIndentLevel { get; set; } = 0;
 
         public MemorySet(byte memoryLocation, byte value)
         {
@@ -37,15 +42,17 @@ namespace Cells.Genetics.Genes.Programming
         public int Update(Organism self, float deltaTime)
         {
             self.Remember(_memoryLocation, _value);
-
-            if (Game1.Debug == self)
-            {
-                Debug.WriteLine("[MEM][{0}] = {1}",
-                    _memoryLocation.ToString("X2"),
-                    _value.ToString("X2"));
-            }
-
+            this.Log(ToString());
             return 0;
+        }
+
+        private string _string;
+        public override string ToString()
+        {
+            if (_string == null)
+                _string = $"SET [{_memoryLocation:X2}x0] = {_value}";
+
+            return _string;
         }
     }
 }

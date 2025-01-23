@@ -8,8 +8,13 @@ namespace Cells.Genetics.Genes
 {
     public abstract class CollisionHandler: IHandleCollisions
     {
+        public bool AllowMultiple { get; protected set; } = true;
         public int BlockLength { get; private set; }
         public Type CollidesWith { get; private set; }
+        public float Cost { get; protected set; }
+        public List<string> Log { get; } = new List<string>();
+        public int LogIndentLevel { get; set; } = 0;
+        public abstract string Name { get; }
 
         private readonly List<ICanUpdate> _updates = new List<ICanUpdate>();
         protected int StartIndex = 0;
@@ -40,16 +45,12 @@ namespace Cells.Genetics.Genes
 
         public virtual void HandleCollision(Organism self, GameObject other, float deltaTime)
         {
-            if (Game1.Debug == self)
-                Debug.WriteLine("[HandleCollision] " + StartIndex);
-
             for (int i = StartIndex; i < _updates.Count; i++)
             {
-                i += _updates[i].Update(self, deltaTime);
+                var updater = _updates[i];
+                i += updater.Update(self, deltaTime);
+                Cost += updater.Cost;
             }
-
-            if (Game1.Debug == self)
-                Debug.WriteLine("[HandleCollision][FINISHED]");
         }
     }
 }

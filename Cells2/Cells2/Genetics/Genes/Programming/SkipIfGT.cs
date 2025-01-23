@@ -1,4 +1,5 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.Diagnostics;
 using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
@@ -29,6 +30,10 @@ namespace Cells.Genetics.Genes.Programming
         private readonly byte _value;
         private readonly byte _memoryLocation;
         private readonly byte _skipSize;
+        public float Cost { get; private set; } = 1f;
+        public string Name { get; } = "IFGT";
+        public List<string> Log { get; } = new List<string>();
+        public int LogIndentLevel { get; set; } = 0;
 
         public SkipIfGT(byte memoryLocation, byte value, byte skipSize)
         {
@@ -42,17 +47,17 @@ namespace Cells.Genetics.Genes.Programming
             var value = self.Remember<byte>(_memoryLocation);
             var equals = value > _value;
 
-            if (Game1.Debug == self)
-            {
-                Debug.WriteLine("[MEM][{0}({1})] > {2} ({3}) SKIP {4}",
-                    _memoryLocation.ToString("X2"),
-                    value,
-                    _value.ToString("X2"),
-                    equals,
-                    _skipSize);
-            }
-
+            this.Log($"IF ([{_memoryLocation:X2}x0({value})] > {_value} ({equals})) SKIP {_skipSize}");
             return @equals ? _skipSize : 0;
+        }
+
+        private string _string;
+        public override string ToString()
+        {
+            if (_string == null)
+                _string = $"{Name} ([{_memoryLocation:X2}x0] > {_value}) SKIP {_skipSize}";
+
+            return _string;
         }
     }
 }

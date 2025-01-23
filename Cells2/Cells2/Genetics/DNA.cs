@@ -53,7 +53,7 @@ namespace Cells.Genetics
 
             if (numParents < 1)
                 throw new NotEnoughParentDNAException();
-            
+
             var fragments = new List<byte[]>();
 
             if (numParents == 1)
@@ -122,7 +122,7 @@ namespace Cells.Genetics
             return GetFragment(start, start + maker.Size, 0f);
         }
 
-        public float RelatedPercent(DNA other, int samples = MinimumFragmentLength)
+        public float RelatedPercent(DNA other, int samples = -1)
         {
             return Data.Compare(other.Data, samples);
         }

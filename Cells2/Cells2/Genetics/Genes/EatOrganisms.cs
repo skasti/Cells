@@ -1,40 +1,48 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
+using System.Dynamic;
 using Cells.GameObjects;
 using Cells.Genetics.GeneTypes;
 
 namespace Cells.Genetics.Genes
 {
-    public class EatOrganisms : CollisionHandler
+    public class EatOrganisms : CollisionHandler, ITrait
     {
         public class Maker : GeneMaker
         {
             public Maker()
-                : base(0x20, 0x21, 7)
+                : base(0x20, 0x21, 8)
             {
             }
 
             public override IAmAGene Make(byte[] fragment)
             {
                 return new EatOrganisms(
-                    fragment[1].AsByte(0x10),
-                    fragment[2].AsByte(0x10),
-                    fragment[3].AsByte(0x10),
-                    fragment[4].AsByte(0x10),
-                    fragment[5].AsByte(0x20, 0x01),
-                    fragment[6].AsFloat(0.01f, 1f));
+                    blockLength: fragment[1].AsByte(0x10),
+                    targetMemoryLocation: fragment[2].AsByte(0x10),
+                    deadGoto: fragment[3].AsByte(0x10),
+                    tooFarGoto: fragment[4].AsByte(0x10),
+                    biggerGoto: fragment[5].AsByte(0x10),
+                    dnaSampleSize: fragment[6].AsFloat(0.01f, 0.99f),
+                    relationThreshold: fragment[7].AsFloat(0.01f, 1f));
             }
         }
 
+        public override string Name { get; } = "EAT ORGANISMS";
+
         private readonly byte _targetMemoryLocation;
+        private readonly byte _deadGoto;
         private readonly byte _tooFarGoto;
         private readonly byte _biggerGoto;
-        private readonly int _dnaSampleSize;
+        private readonly float _dnaSampleSize;
         private readonly float _relationThreshold;
 
-        public EatOrganisms(byte blockLength, byte targetMemoryLocation, byte tooFarGoto, byte biggerGoto, int dnaSampleSize, float relationThreshold)
+        public EatOrganisms(byte blockLength, byte targetMemoryLocation, byte deadGoto, byte tooFarGoto, byte biggerGoto, float dnaSampleSize, float relationThreshold)
             : base(blockLength, typeof(Organism))
         {
+            AllowMultiple = false;
             _targetMemoryLocation = targetMemoryLocation;
+            _deadGoto = deadGoto;
             _tooFarGoto = tooFarGoto;
             _biggerGoto = biggerGoto;
             _dnaSampleSize = dnaSampleSize;
@@ -43,43 +51,69 @@ namespace Cells.Genetics.Genes
 
         public override void HandleCollision(Organism self, GameObject other, float deltaTime)
         {
+            Cost = 0f;
+            this.Log($"[COLLISION] EAT FOOD {other.Position}",1);
             StartIndex = 0;
 
             var prey = other as Organism;
 
-            if (prey.Radius < self.Radius)
+            if (!other.Alive)
             {
-                var distance = (self.Position - other.Position).Length();
+                this.Log($"is dead, skipping {_deadGoto}");
+                this.Log($"forget target [{_targetMemoryLocation:X2}x0]");
+                StartIndex = _deadGoto;
+                self.Forget(_targetMemoryLocation);
+                base.HandleCollision(self, other, deltaTime);
+                this.Log("done", -1);
+                return;
+            }
 
-                if (distance > self.Radius)
-                {
-                    StartIndex = _tooFarGoto;
-                    self.Remember(_targetMemoryLocation, prey);
-                }
-                else
-                {
-                    var relativism = self.DNA.RelatedPercent(prey.DNA, _dnaSampleSize);
+            if (prey.Mass > self.Mass)
+            {
+                this.Log($"is bigger, skipping {_deadGoto}");
+                this.Log($"forget target [{_targetMemoryLocation:X2}x0]");
+                StartIndex = _biggerGoto;
+                self.Forget(_targetMemoryLocation);
+                base.HandleCollision(self, other, deltaTime);
+                this.Log("done", -1);
+                return;
+            }
 
-                    if (relativism < _relationThreshold)
-                    {
-                        if (Game1.Debug == self)
-                            Debug.WriteLine("[EatOrganisms][CloseEnough] " + relativism);
-                    }
-                    else
-                    {
-                        if (Game1.Debug == self)
-                            Debug.WriteLine("[EatOrganisms][IEatYou] " + relativism);
-                        self.GiveEnergy(prey.TakeEnergy(self.Energy*deltaTime));
-                    }
-                }
+            Cost += 1f;
+
+            var distance = (self.Position - other.Position).Length();
+
+            if (distance > self.Radius)
+            {
+                this.Log($"too far, skipping {_tooFarGoto}");
+                this.Log($"remember target [{_targetMemoryLocation:X2}x0]");
+                StartIndex = _tooFarGoto;
+                self.Remember(_targetMemoryLocation, prey);
             }
             else
             {
-                StartIndex = _biggerGoto;
-                self.Forget(_targetMemoryLocation);
+                Cost += 1f;
+                var selfC = (float)Math.Abs(self.Color.GetHashCode());
+                var preyC = (float)Math.Abs(prey.Color.GetHashCode());
+                var relativism = preyC > selfC ? selfC / preyC : preyC / selfC;  //self.DNA.RelatedPercent(prey.DNA, (int)(_dnaSampleSize * self.DNA.Size));
+
+                if (relativism > _relationThreshold)
+                    this.Log($"looks like me, not eating");
+                else
+                {
+                    var taken = prey.TakeEnergy(self.Energy*deltaTime);
+                    self.GiveEnergy(taken);
+                    this.Log($"eating ({taken})");
+                }
             }
 
             base.HandleCollision(self, other, deltaTime);
+            this.Log("done", -1);
+        }
+
+        public void Apply(Organism self)
+        {
+            self.Texture = Game1.Virus;
         }
     }
 }

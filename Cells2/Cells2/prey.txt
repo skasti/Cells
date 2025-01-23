@@ -3,6 +3,8 @@
 FF G
 00 B
 FF A
+45 BaseMetabolicRate
+01
 39 SetTopSpeed
 80 TopSpeed
 50 UpdateBlock

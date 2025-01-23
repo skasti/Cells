@@ -1,4 +1,5 @@
-﻿using Cells.GameObjects;
+﻿using System.Collections.Generic;
+using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
 
@@ -23,6 +24,10 @@ namespace Cells.Genetics.Genes
         }
 
         public float PercentToBreak { get; private set; }
+        public float Cost { get; private set; } = 1f;
+        public string Name { get; } = "BREAK";
+        public List<string> Log { get; } = new List<string>();
+        public int LogIndentLevel { get; set; } = 0;
 
         public Break(float percentToBreak)
         {
@@ -31,8 +36,19 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            self.Force = (-self.Velocity / deltaTime) * self.Mass * PercentToBreak;
+            var forceAdd = (-self.Velocity / deltaTime) * self.Mass * PercentToBreak;
+            self.Force += forceAdd;
+            this.Log($"BREAKING({PercentToBreak*100f}%): {forceAdd} ({self.Force})");
             return 0;
+        }
+
+        private string _string;
+        public override string ToString()
+        {
+            if (_string == null)
+                _string = $"{Name} [{PercentToBreak*100f}%]";
+
+            return _string;
         }
     }
 }

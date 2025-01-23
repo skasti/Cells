@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using System.Collections.Generic;
+using System.ComponentModel.Design.Serialization;
+using System.Diagnostics;
 using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
 using Cells.Genetics.GeneTypes;
@@ -27,6 +29,10 @@ namespace Cells.Genetics.Genes
 
         private readonly byte _targetMemoryLocation;
         private readonly float _desiredSpeed;
+        public float Cost { get; private set; } = 1f;
+        public string Name { get; } = "AVOID OBJECT";
+        public List<string> Log { get; } = new List<string>();
+        public int LogIndentLevel { get; set; } = 0;
 
         public AvoidObject(byte targetMemoryLocation, float desiredSpeed)
         {
@@ -36,35 +42,44 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            if (Game1.Debug == self)
-                Debug.WriteLine("[AvoidObject] " + _targetMemoryLocation.ToString("X2"));
-
+            this.Log($"AVOID OBJECT [{_targetMemoryLocation:X2}]",1);
+            Cost = 1;
             var target = self.Remember<GameObject>(_targetMemoryLocation);
 
             if (target == null)
-                return 0;
+            {
+                this.Log("no target",-1);
+                return 2;
+            }
+
+            this.Log($"target: [{target.GetType().Name} ({target.Position})]:");
 
             if (target.Removed)
             {
-                if (Game1.Debug == self)
-                    Debug.WriteLine("[AvoidObject][Forget]" + _targetMemoryLocation.ToString("X2"));
+                this.Log($"forget [{_targetMemoryLocation:X2}x0]",-1);
                 self.Forget(_targetMemoryLocation);
                 return 0;
             }
 
-            if (Game1.Debug == self)
-                Debug.WriteLine("[AvoidObject][Avoiding] " + target.Position);
-
             var direction = self.Position - target.Position;
             direction.Normalize();
             direction *= _desiredSpeed;
+            var forceAdd = (direction / deltaTime) * self.Mass;
+            self.Force += forceAdd;
 
-            self.Force = (direction / deltaTime) * self.Mass;
-
-            if (Game1.Debug == self)
-                Debug.WriteLine("[AvoidObject][Force] " + self.Force);
-
+            self.Status =  $"Avoiding [{target.GetType().Name} ({target.Position})]";
+            this.Log($"add force: {forceAdd} ({self.Force})",-1);
+            Cost = 2;
             return 1;
+        }
+
+        private string _string;
+        public override string ToString()
+        {
+            if (_string == null)
+                _string = $"{Name} [{_targetMemoryLocation}]";
+
+            return _string;
         }
     }
 }
