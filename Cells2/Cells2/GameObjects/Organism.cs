@@ -115,6 +115,9 @@ namespace Cells.GameObjects
         public string UpdateCode { get; private set; }
         public List<string> UpdateLog { get; private set; } = new List<string>();
         public int UpdateLogIndentLevel = 1;
+
+        public List<string> CollisionLog { get; private set; } = new List<string>();
+        public int CollisionLogIndentLevel = 1;
         private readonly List<UpdateBlock> _updateBlocks = new List<UpdateBlock>();
         private readonly Dictionary<Type, List<IHandleCollisions>> _collisionHandlers = new Dictionary<Type, List<IHandleCollisions>>();
         public Organism()
@@ -260,13 +263,13 @@ namespace Cells.GameObjects
                 UpdateLog.Clear();
 
             Force = Vector2.Zero;
+            UpdateLogIndentLevel = 0;
             foreach (var updateBlock in _updateBlocks)
             {
-                UpdateLogIndentLevel = 0;
-                UpdateLog.Add($"Block {_updateBlocks.IndexOf(updateBlock)} ({updateBlock.BlockLength}):");
-                UpdateLogIndentLevel = 1;
+                updateBlock.LogIndentLevel = UpdateLogIndentLevel;
                 updateBlock.Update(this, deltaTime);
                 UpdateCost += updateBlock.Cost;
+                UpdateLog.AddRange(updateBlock.Log);
             }
 
             if (Force.Length() < 2f)
@@ -319,10 +322,16 @@ namespace Cells.GameObjects
         {
             if (_collisionHandlers.ContainsKey(other.GetType()))
             {
+                if (CollisionLog.Count > 0)
+                    CollisionLog.Clear();
+                CollisionLogIndentLevel = 0;
                 foreach (var collisionHandler in _collisionHandlers[other.GetType()])
                 {
+                    collisionHandler.LogIndentLevel = 0;
+                    collisionHandler.Log.Clear();
                     collisionHandler.HandleCollision(this, other, deltaTime);
                     CollisionCost += collisionHandler.Cost;
+                    CollisionLog.AddRange(collisionHandler.Log);
                 }
             }
         }

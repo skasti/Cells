@@ -61,12 +61,23 @@ namespace Cells.Genetics.Genes
         public int Update(Organism self, float deltaTime)
         {
             Cost = 0f;
+            Log.Clear();
+            this.Log($"Block ({_updates.Count}):", 1);
             for (int i = 0; i < _updates.Count; i++)
             {
                 var updater = _updates[i];
-                i += updater.Update(self, deltaTime);
+                updater.Log.Clear();
+                updater.LogIndentLevel = LogIndentLevel;
+                var skip = updater.Update(self, deltaTime);
+                Log.AddRange(updater.Log);
+
+                for (var j = i + 1; j < i + skip && j < _updates.Count; j++)
+                    this.Log($"- {_updates[j].ToString()}");
+
+                i += skip;
                 Cost += updater.Cost;
             }
+            LogIndentLevel -= 1;
 
             return 0;
         }

@@ -48,7 +48,15 @@ namespace Cells.Genetics.Genes
             for (int i = StartIndex; i < _updates.Count; i++)
             {
                 var updater = _updates[i];
-                i += updater.Update(self, deltaTime);
+                updater.Log.Clear();
+                updater.LogIndentLevel = LogIndentLevel;
+                var skip = updater.Update(self, deltaTime);
+                Log.AddRange(updater.Log);
+
+                for (var j = i + 1; j < i + skip && j < _updates.Count; j++)
+                    this.Log($"- {_updates[j].ToString()}");
+
+                i += skip;
                 Cost += updater.Cost;
             }
         }

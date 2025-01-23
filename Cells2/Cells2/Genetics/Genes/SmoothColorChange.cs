@@ -49,6 +49,7 @@ namespace Cells.Genetics.Genes
         public int Update(Organism self, float deltaTime)
         {
             Cost = 0f;
+            this.Log($"SMOOTH COLOR CHANGE {_startColor} -> {_targetColor} ({_timeUsed}/{_changeTime})", 1);
             var currentColor = self.Color.ToVector4();
 
             if (currentColor == _targetColor)
@@ -75,7 +76,7 @@ namespace Cells.Genetics.Genes
 
             self.Color = new Color(newColor);
 
-            this.Log($"SMOOTH COLOR CHANGE {_startColor} -> {_targetColor} ({_timeUsed}/{_changeTime}) = {newColor}");
+            this.Log($"Result: {newColor}");
 
             return 0;
         }

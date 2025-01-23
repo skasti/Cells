@@ -320,7 +320,8 @@ public class Game1 : Game
             _spriteBatch.DrawString(Arial, $"EnergyChangeRate: {Observing.EnergyChangeRate}", new Vector2(10, 250), Color.White);
 
             _spriteBatch.DrawString(Arial, $"Status: {Observing.Status}", new Vector2(10, 280), Color.White);
-            _spriteBatch.DrawString(Arial, $"LOG:\n{String.Join("\n",Observing.UpdateLog)}", new Vector2(10, 300), Color.White);
+            _spriteBatch.DrawString(Arial, $"Update Log:\n{String.Join("\n",Observing.UpdateLog)}", new Vector2(10, 300), Color.White);
+            _spriteBatch.DrawString(Arial, $"Collision Log:\n{String.Join("\n",Observing.CollisionLog)}", new Vector2(1000, 10), Color.White);
         }
         else if (keyboardState.IsKeyDown(Keys.D))
         {
