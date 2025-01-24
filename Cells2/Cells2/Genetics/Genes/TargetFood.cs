@@ -25,7 +25,7 @@ namespace Cells.Genetics.Genes
                     fragment[1].AsFloat(10f, 1000f),
                     fragment[2].AsByte(0x10, 0x01),
                     fragment[3].AsByte(0x10),
-                    fragment[4].AsByte(0x10));
+                    fragment[4].AsByte(0x05));
             }
         }
 
@@ -33,7 +33,7 @@ namespace Cells.Genetics.Genes
         private readonly byte _targetMemoryLocation;
         private readonly byte _trackingCapacity;
         private readonly byte _noTargetsGoto;
-        public float Cost => _targetingRange / 10f;
+        public float Cost => _targetingRange / 400f;
         public string Name { get; } = "TARGET FOOD";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
@@ -73,13 +73,13 @@ namespace Cells.Genetics.Genes
             return 0;
         }
 
-        private Dictionary<int, string> _string = new Dictionary<int, string>();
-        public string ToString(int level = 0)
+        private string _string = null;
+        public override string ToString()
         {
-            if (!_string.ContainsKey(level))
-                _string.Add(level, $"{this.Indent(level)}TargetFood[{_targetingRange}]");
+            if (_string == null)
+                _string = $"TargetFood[{_targetingRange}]";
 
-            return _string[level];
+            return _string;
         }
     }
 }
