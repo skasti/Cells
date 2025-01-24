@@ -46,13 +46,13 @@ namespace Cells.Genetics.Genes
             return 0;
         }
 
-        private Dictionary<int,string> _string = new Dictionary<int, string>();
-        public string ToString(int level = 0)
+        private string _string = null;
+        public override string ToString()
         {
-            if (!_string.ContainsKey(level))
-                _string.Add(level, $"{this.Indent(level)}SetMovementMetabolicRate[{_rate}]");
+            if (_string == null)
+                _string = $"SetMovementMetabolicRate[{_rate}]";
 
-            return _string[level];
+            return _string;
         }
     }
 }
