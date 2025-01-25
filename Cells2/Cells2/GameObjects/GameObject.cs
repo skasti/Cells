@@ -9,6 +9,17 @@ namespace Cells.GameObjects
 {
     public abstract class GameObject
     {
+        public enum ReadableProperties {
+            Position_X,
+            Position_Y,
+            Mass,
+            Radius,
+            Color_R,
+            Color_G,
+            Color_B,
+            Age,
+            Alive
+        }
         public Node CurrentNode { get; set; }
         public Vector2 Position { get; set; }
         private Vector2 prevPosition { get; set; }

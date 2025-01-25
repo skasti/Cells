@@ -1,0 +1,63 @@
+﻿using System.Collections.Generic;
+using System.Diagnostics;
+using Cells.GameObjects;
+using Cells.Genetics.Exceptions;
+using Cells.Genetics.GeneTypes;
+
+namespace Cells.Genetics.Genes.Programming
+{
+    public class MemorySubtractMem: ICanUpdate
+    {
+        public class Maker : GeneMaker
+        {
+            public Maker()
+                : base(0xF4, 0xF5, 3)
+            {
+            }
+
+            public override IAmAGene Make(byte[] fragment)
+            {
+                if (fragment.Length < Size)
+                    throw new GenomeTooShortException();
+
+                return new MemorySubtractMem(
+                    memoryLocation: fragment[1].AsByte(0xFF),
+                    otherMemoryLocation: fragment[2].AsByte(0xFF)
+                    );
+            }
+        }
+        private readonly byte _otherMemoryLocation;
+        private readonly byte _memoryLocation;
+        public float Cost { get; private set; } = 1f;
+        public string Name { get; } = "SUB";
+        public List<string> Log { get; } = new List<string>();
+        public int LogIndentLevel { get; set; } = 0;
+
+        public MemorySubtractMem(byte memoryLocation, byte otherMemoryLocation)
+        {
+            _memoryLocation = memoryLocation;
+            _otherMemoryLocation = otherMemoryLocation;
+        }
+
+        public int Update(Organism self, float deltaTime)
+        {
+            this.Log(ToString(), 1);
+            var currentValue = self.Remember<byte>(_memoryLocation);
+            var otherValue = self.Remember<byte>(_otherMemoryLocation);
+            var newValue = (byte)(currentValue - otherValue);
+            self.Remember(_memoryLocation, newValue);
+
+            this.Log($"{currentValue} -= {otherValue} ({newValue})");
+            return 0;
+        }
+
+        private string _string;
+        public override string ToString()
+        {
+            if (_string == null)
+                _string = $"{Name} [{_memoryLocation:X2}x0] -= [{_otherMemoryLocation:X2}x0]";
+
+            return _string;
+        }
+    }
+}

@@ -35,7 +35,16 @@ namespace Cells.Genetics
             new SkipIfEquals.Maker(),
             new SkipIfNotEquals.Maker(),
             new SkipIfGT.Maker(),
-            new SkipIfLT.Maker()
+            new SkipIfLT.Maker(),
+
+            new MemoryAddMem.Maker(),
+            new MemoryCpy.Maker(),
+            new MemorySubtractMem.Maker(),
+            new SkipIfEqualsMem.Maker(),
+            new SkipIfGTMem.Maker(),
+            new SkipIfLTMem.Maker(),
+            new SkipIfNotEqualsMem.Maker(),
+            new MemoryReadProperty.Maker()
         };
 
         public static List<IMakeAGene> GetMakers()
