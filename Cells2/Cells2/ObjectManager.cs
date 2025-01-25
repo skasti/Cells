@@ -18,7 +18,7 @@ namespace Cells
         public Stopwatch DrawStopwatch { get; } = new Stopwatch();
         static Dictionary<Type,int> ObjectLimit = new Dictionary<Type, int>
         {
-            {typeof(Organism), 500}
+            {typeof(Organism), 1000}
         };
 
         static readonly ObjectManager _instance = new ObjectManager();

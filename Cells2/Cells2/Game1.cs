@@ -127,6 +127,10 @@ public class Game1 : Game
             {
                 ObjectManager.Instance.Add(new Organism(new DNA(file)));
                 numSpawns++;
+
+                if (numSpawns > 75) {
+                    break;
+                }
             }
         }
 
@@ -137,7 +141,7 @@ public class Game1 : Game
 
         for (int i = 0; i < 500; i++)
         {
-            ObjectManager.Instance.Add(new Food(RandomPosition(), Random.Next(100, 500)));
+            ObjectManager.Instance.Add(new Food(RandomPosition(), Random.Next(100, 5000)));
         }
 
         // TODO: use this.Content to load your game content here
@@ -156,7 +160,7 @@ public class Game1 : Game
 
         for (int i = 0; i < fittestOrganisms.Count; i++)
         {
-            File.WriteAllText($"Genomes\\Genome_{i}.txt", fittestOrganisms[i].Capabilities + "\n\n" + fittestOrganisms[i].UpdateCode);
+            //File.WriteAllText($"Genomes\\Genome_{i}.txt", fittestOrganisms[i].Capabilities + "\n\n" + fittestOrganisms[i].UpdateCode);
             fittestOrganisms[i].DNA.Save("Genomes\\Genome_" + i + ".dna");
         }
     }
@@ -235,7 +239,7 @@ public class Game1 : Game
             if (ObjectManager.Instance.Count<Food>() < 500)
                 ObjectManager.Instance.Add(new Food(RandomPosition(), Random.Next(100, 5000)));
 
-            if (ObjectManager.Instance.Count<Organism>() < 100)
+            if (ObjectManager.Instance.Count<Organism>() < 50)
             {
                 if (_fittest != null)
                 {
@@ -305,13 +309,14 @@ public class Game1 : Game
         _spriteBatch.Begin();
         _spriteBatch.DrawString(Arial, $"SimTime: T+{_simulationTime:g}", new Vector2(10, 10), Color.White);
         _spriteBatch.DrawString(Arial, $"Warp: {DisplayedTimewarp:0.00}x", new Vector2(10, 30), Color.White);
-        _spriteBatch.DrawString(Arial, $"SR: {SpawnRate}", new Vector2(10, 50), Color.White);
+        _spriteBatch.DrawString(Arial, $"SpawnRate: {SpawnRate}", new Vector2(10, 50), Color.White);
         _spriteBatch.DrawString(Arial, $"Fittest: {_fittest.Fitness}", new Vector2(10, 70), Color.White);
+        _spriteBatch.DrawString(Arial, $"Organisms: {ObjectManager.Instance.Count<Organism>()}", new Vector2(10, 90), Color.White);
 
         if (Observing != null && keyboardState.IsKeyDown(Keys.O))
         {
             _spriteBatch.DrawString(Arial, $"Energy: {Observing.Energy}", new Vector2(10, 120), Color.White);
-            _spriteBatch.DrawString(Arial, $"Force: {Observing.Force.Length():0.00} {Observing.Force}", new Vector2(10, 140), Color.White);
+            _spriteBatch.DrawString(Arial, $"Force: {Observing.Force.Length():0.00} {Observing.Force.ToShortString()}", new Vector2(10, 140), Color.White);
             _spriteBatch.DrawString(Arial, $"Age: {Observing.Age}", new Vector2(10, 160), Color.White);
             _spriteBatch.DrawString(Arial, $"Fitness: {Observing.Fitness}", new Vector2(10, 180), Color.White);
 

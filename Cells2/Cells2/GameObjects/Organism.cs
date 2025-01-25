@@ -70,8 +70,8 @@ namespace Cells.GameObjects
 
                 if (change <= 0)
                     return;
-
-                BreedFitness += change * Fitness * 0.1f;
+                SpawnTime = 0;
+                BreedFitness += Math.Min(change * Fitness * 0.1f, 500f);
                 _breedCount = value;
             }
         }
@@ -109,6 +109,8 @@ namespace Cells.GameObjects
 
         public float UpdateCost { get; private set; }
         public float CollisionCost { get; private set; }
+
+        public float SpawnTime { get; private set; }
 
         public string Status { get; set; }
         public string Capabilities { get; private set; }
@@ -285,6 +287,7 @@ namespace Cells.GameObjects
             base.Update(deltaTime);
             EnergyChangeRate = (Energy - _prevEnergy) * (1f / deltaTime);
             _prevEnergy = Energy;
+            SpawnTime += deltaTime;
         }
 
         private void CalculateEnergyConsumption(float deltaTime)
