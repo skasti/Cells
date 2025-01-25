@@ -41,7 +41,7 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log($"SET MOVEMENT METABOLIC RATE = {_rate}");
+            this.Log(ToString());
             self.MovementMetabolicRate = _rate;
             return 0;
         }
@@ -50,7 +50,7 @@ namespace Cells.Genetics.Genes
         public override string ToString()
         {
             if (_string == null)
-                _string = $"SetMovementMetabolicRate[{_rate}]";
+                _string = $"SET MovementMetabolicRate[{_rate:0.0000}]";
 
             return _string;
         }

@@ -42,12 +42,13 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
+            this.Log(ToString(), 1);
             Cost = 0.1f;
             var speed = self.Velocity.Length();
 
             if (speed > DesiredSpeed)
             {
-                this.Log($"RANDOM MOVEMENT; {speed} > {DesiredSpeed}");
+                this.Log($"desired speed reached ({speed:0.} > {DesiredSpeed:0.})");
                 return 0;
             }
 
@@ -57,7 +58,7 @@ namespace Cells.Genetics.Genes
             if (timeToChange > 0f)
             {
                 self.Force += previousForce;
-                this.Log($"RANDOM MOVEMENT {previousForce}");
+                this.Log($"no change ({previousForce.ToShortString()})");
                 return 0;
             }
             timeToChange = changeRate;
@@ -69,7 +70,7 @@ namespace Cells.Genetics.Genes
             forceAdd = forceAdd * 0.25f + previousForce * 0.75f;
             previousForce = forceAdd;
             self.Force += forceAdd;
-            this.Log($"RANDOM MOVEMENT {forceAdd}");
+            this.Log($"new force ({forceAdd.ToShortString()})");
             Cost = 2f;
 
             return 0;

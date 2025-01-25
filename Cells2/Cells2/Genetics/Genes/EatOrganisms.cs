@@ -52,15 +52,14 @@ namespace Cells.Genetics.Genes
         public override void HandleCollision(Organism self, GameObject other, float deltaTime)
         {
             Cost = 0f;
-            this.Log($"[COLLISION] EAT FOOD {other.Position}",1);
+            this.Log($"EAT ORGANISM {other.Position.ToShortString()}",1);
             StartIndex = 0;
 
             var prey = other as Organism;
 
             if (!other.Alive)
             {
-                this.Log($"is dead, skipping {_deadGoto}");
-                this.Log($"forget target [{_targetMemoryLocation:X2}x0]");
+                this.Log($"is dead, forget target [{_targetMemoryLocation:X2}x0]");
                 StartIndex = _deadGoto;
                 self.Forget(_targetMemoryLocation);
                 base.HandleCollision(self, other, deltaTime);
@@ -70,8 +69,7 @@ namespace Cells.Genetics.Genes
 
             if (prey.Mass > self.Mass)
             {
-                this.Log($"is bigger, skipping {_deadGoto}");
-                this.Log($"forget target [{_targetMemoryLocation:X2}x0]");
+                this.Log($"is bigger, forget target [{_targetMemoryLocation:X2}x0]");
                 StartIndex = _biggerGoto;
                 self.Forget(_targetMemoryLocation);
                 base.HandleCollision(self, other, deltaTime);
@@ -85,8 +83,7 @@ namespace Cells.Genetics.Genes
 
             if (distance > self.Radius)
             {
-                this.Log($"too far, skipping {_tooFarGoto}");
-                this.Log($"remember target [{_targetMemoryLocation:X2}x0]");
+                this.Log($"too far, remember target [{_targetMemoryLocation:X2}x0]");
                 StartIndex = _tooFarGoto;
                 self.Remember(_targetMemoryLocation, prey);
             }

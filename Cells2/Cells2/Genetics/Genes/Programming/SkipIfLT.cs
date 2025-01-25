@@ -21,9 +21,9 @@ namespace Cells.Genetics.Genes.Programming
                     throw new GenomeTooShortException();
 
                 return new SkipIfLT(
-                    fragment[1].AsByte(0xFF),
-                    fragment[2].AsByte(0xFF),
-                    fragment[3].AsByte(0x10, 0x01)
+                    memoryLocation: fragment[1].AsByte(0xFF),
+                    value: fragment[2].AsByte(0xFF),
+                    skipSize: fragment[3].AsByte(0x10, 0x01)
                     );
             }
         }

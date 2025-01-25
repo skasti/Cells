@@ -38,7 +38,7 @@ namespace Cells.Genetics.Genes
         {
             var forceAdd = (-self.Velocity / deltaTime) * self.Mass * PercentToBreak;
             self.Force += forceAdd;
-            this.Log($"BREAKING({PercentToBreak*100f}%): {forceAdd} ({self.Force})");
+            this.Log($"BREAKING({PercentToBreak*100f:0.}%): {forceAdd.ToShortString()} ({self.Force.ToShortString()})");
             return 0;
         }
 
@@ -46,7 +46,7 @@ namespace Cells.Genetics.Genes
         public override string ToString()
         {
             if (_string == null)
-                _string = $"{Name} [{PercentToBreak*100f}%]";
+                _string = $"{Name} [{PercentToBreak*100f:0.}%]";
 
             return _string;
         }

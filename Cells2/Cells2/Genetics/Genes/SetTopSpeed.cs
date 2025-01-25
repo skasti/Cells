@@ -45,7 +45,7 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log($"SET TOP SPEED = {_topSpeed}");
+            this.Log(ToString());
             self.TopSpeed = _topSpeed;
             return 0;
         }
@@ -54,7 +54,7 @@ namespace Cells.Genetics.Genes
         public override string ToString()
         {
             if (_string == null)
-                _string = $"SetTopSpeed[{_topSpeed}]";
+                _string = $"SET TopSpeed[{_topSpeed}]";
 
             return _string;
         }

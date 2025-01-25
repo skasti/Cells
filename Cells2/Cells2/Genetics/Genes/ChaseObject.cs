@@ -49,7 +49,7 @@ namespace Cells.Genetics.Genes
                 return 0;
             }
 
-            this.Log($"target: [{target.GetType().Name} ({target.Position})]:");
+            this.Log($"target: [{target.GetType().Name} ({target.Position.ToShortString()})]:");
 
             if (target.Removed)
             {
@@ -73,7 +73,7 @@ namespace Cells.Genetics.Genes
             var forceAdd = (direction / deltaTime) * self.Mass;
             self.Force += forceAdd;
 
-            this.Log($"add force: {forceAdd} ({self.Force})",-1);
+            this.Log($"add force: {forceAdd.ToShortString()} ({self.Force.ToShortString()})",-1);
             Cost = 2f;
             return 1;
         }

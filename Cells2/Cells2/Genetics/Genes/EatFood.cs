@@ -45,14 +45,13 @@ namespace Cells.Genetics.Genes
         public override void HandleCollision(Organism self, GameObject other, float deltaTime)
         {
             Cost = 0f;
-            this.Log($"[COLLISION] EAT FOOD {other.Position}",1);
+            this.Log($"EAT FOOD {other.Position.ToShortString()}",1);
             StartIndex = 0;
             var food = other as Food;
 
             if (!other.Alive)
             {
-                this.Log($"is dead, skipping {_deadGoto}");
-                this.Log($"forget target [{_targetMemoryLocation:X2}x0]");
+                this.Log($"is dead, forget target [{_targetMemoryLocation:X2}x0]");
                 StartIndex = _deadGoto;
                 self.Forget(_targetMemoryLocation);
                 base.HandleCollision(self, other, deltaTime);
@@ -73,8 +72,7 @@ namespace Cells.Genetics.Genes
             }
             else
             {
-                this.Log($"too far, skipping {_tooFarGoto}");
-                this.Log($"remembering target [{_targetMemoryLocation:X2}x0]");
+                this.Log($"too far, remember target [{_targetMemoryLocation:X2}x0]");
                 self.Remember(_targetMemoryLocation, food);
                 self.Status = "Not Eating - Too Far";
                 StartIndex = _tooFarGoto;

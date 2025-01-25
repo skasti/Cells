@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using Cells.GameObjects;
 using Cells.Genetics.GeneTypes;
 
 namespace Cells.Genetics.Genes
 {
-    public abstract class CollisionHandler: IHandleCollisions
+    public abstract class CollisionHandler : IHandleCollisions
     {
         public bool AllowMultiple { get; protected set; } = true;
         public int BlockLength { get; private set; }
@@ -49,12 +50,17 @@ namespace Cells.Genetics.Genes
             {
                 var updater = _updates[i];
                 updater.Log.Clear();
-                updater.LogIndentLevel = LogIndentLevel;
+                updater.LogIndentLevel = LogIndentLevel + 1;
                 var skip = updater.Update(self, deltaTime);
                 Log.AddRange(updater.Log);
 
-                for (var j = i + 1; j < i + skip && j < _updates.Count; j++)
-                    this.Log($"- {_updates[j].ToString()}");
+                if (skip > 0)
+                {
+                    Log[Log.Count - 1] = $"{Log.Last()} [SKIP {skip}]";
+
+                    for (var j = i + 1; j < i + skip && j < _updates.Count; j++)
+                        this.Log($"- {_updates[j].ToString()}");
+                }
 
                 i += skip;
                 Cost += updater.Cost;

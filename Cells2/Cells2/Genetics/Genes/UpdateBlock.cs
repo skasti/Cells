@@ -1,5 +1,6 @@
 ﻿using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
@@ -62,7 +63,7 @@ namespace Cells.Genetics.Genes
         {
             Cost = 0f;
             Log.Clear();
-            this.Log($"Block ({_updates.Count}):", 1);
+            this.Log($"Update Block ({_updates.Count}) {{", 1);
             for (int i = 0; i < _updates.Count; i++)
             {
                 var updater = _updates[i];
@@ -71,13 +72,19 @@ namespace Cells.Genetics.Genes
                 var skip = updater.Update(self, deltaTime);
                 Log.AddRange(updater.Log);
 
-                for (var j = i + 1; j < i + skip && j < _updates.Count; j++)
-                    this.Log($"- {_updates[j].ToString()}");
+                if (skip > 0)
+                {
+                    Log[Log.Count - 1] = $"{Log.Last()} [SKIP {skip}]";
+
+                    for (var j = i + 1; j < i + skip && j < _updates.Count; j++)
+                        this.Log($"- {_updates[j].ToString()}");
+                }
 
                 i += skip;
                 Cost += updater.Cost;
             }
             LogIndentLevel -= 1;
+            this.Log($"}}");
 
             return 0;
         }

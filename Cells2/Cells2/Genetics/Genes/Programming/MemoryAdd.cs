@@ -21,8 +21,8 @@ namespace Cells.Genetics.Genes.Programming
                     throw new GenomeTooShortException();
 
                 return new MemoryAdd(
-                    fragment[1].AsByte(0xFF),
-                    fragment[2].AsByte(0xFF)
+                    memoryLocation: fragment[1].AsByte(0xFF),
+                    value: fragment[2].AsByte(0xFF)
                     );
             }
         }

@@ -48,7 +48,7 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log($"TARGET ORGANISM ({_targetingRange}) [{_targetMemoryLocation:X2}x0]", 1);
+            this.Log(ToString(), 1);
 
             var organismsInRange = ObjectManager.Instance.GetObjectsWithinRange<Organism>(self, _targetingRange).Where(t => t.Color != self.Color && t.Radius < self.Radius)
                 .OrderBy(self.Distance).ToList();
@@ -57,7 +57,7 @@ namespace Cells.Genetics.Genes
 
             if (organismsInRange.Count < 1)
             {
-                this.Log($"no targets, skipping {_noTargetsGoto}", -1);
+                this.Log($"no targets");
                 return _noTargetsGoto;
             }
 
@@ -67,10 +67,10 @@ namespace Cells.Genetics.Genes
             {
                 if (i >= organismsInRange.Count)
                     break;
-                this.Log($"remembering [{organismsInRange[i].Position}] at [{memoryLocation:X2}x0]");
+                this.Log($"remembering [{organismsInRange[i].Position.ToShortString()}] at [{memoryLocation:X2}x0]");
                 self.Remember(memoryLocation++, organismsInRange[i]);
             }
-            this.Log($"done", -1);
+            this.Log($"done");
             return 0;
         }
 
@@ -78,7 +78,7 @@ namespace Cells.Genetics.Genes
         public override string ToString()
         {
             if (_string == null)
-                _string = $"TargetOrganisms[{_targetingRange} -> {_targetMemoryLocation}]";
+                _string = $"TARGET Organisms [R: {_targetingRange:0.} M:{_targetMemoryLocation:X2}x0 C:{_trackingCapacity}]";
 
             return _string;
         }

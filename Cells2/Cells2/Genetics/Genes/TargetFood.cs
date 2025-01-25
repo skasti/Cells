@@ -48,14 +48,14 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log($"TARGET FOOD ({_targetingRange}) [{_targetMemoryLocation:X2}x0]", 1);
+            this.Log(ToString(), 1);
             var foodInRange = ObjectManager.Instance.GetObjectsWithinRange<Food>(self, _targetingRange)
                 .OrderBy(self.Distance).ToList();
             this.Log($"in range: {foodInRange.Count}");
 
             if (foodInRange.Count < 1)
             {
-                this.Log($"no targets, skipping {_noTargetsGoto}", -1);
+                this.Log($"no targets");
                 return _noTargetsGoto;
             }
 
@@ -65,11 +65,11 @@ namespace Cells.Genetics.Genes
             {
                 if (i >= foodInRange.Count)
                     break;
-                this.Log($"remembering [{foodInRange[i].Position}] at [{memoryLocation:X2}x0]");
+                this.Log($"remembering [{foodInRange[i].Position.ToShortString()}] at [{memoryLocation:X2}x0]");
                 self.Remember(memoryLocation++, foodInRange[i]);
             }
 
-            this.Log($"done", -1);
+            this.Log($"done");
             return 0;
         }
 
@@ -77,7 +77,7 @@ namespace Cells.Genetics.Genes
         public override string ToString()
         {
             if (_string == null)
-                _string = $"TargetFood[{_targetingRange}]";
+                _string = $"TARGET Food [R: {_targetingRange:0.} M:{_targetMemoryLocation:X2}x0 C:{_trackingCapacity}]";
 
             return _string;
         }

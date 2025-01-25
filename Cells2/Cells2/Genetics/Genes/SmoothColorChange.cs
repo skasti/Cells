@@ -49,7 +49,7 @@ namespace Cells.Genetics.Genes
         public int Update(Organism self, float deltaTime)
         {
             Cost = 0f;
-            this.Log($"SMOOTH COLOR CHANGE {_startColor} -> {_targetColor} ({_timeUsed}/{_changeTime})", 1);
+            this.Log($"{ToString()} ({_timeUsed:0.0}/{_changeTime:0.0})", 1);
             var currentColor = self.Color.ToVector4();
 
             if (currentColor == _targetColor)
@@ -76,7 +76,7 @@ namespace Cells.Genetics.Genes
 
             self.Color = new Color(newColor);
 
-            this.Log($"Result: {newColor}");
+            this.Log($"result: {newColor.ToShortString(2)}");
 
             return 0;
         }
@@ -91,7 +91,7 @@ namespace Cells.Genetics.Genes
         public override string ToString()
         {
             if (_string == null)
-                _string = $"SmoothColorChange[{_startColor} -> {_targetColor}]";
+                _string = $"SMOOTH Color Change[{_startColor.ToShortString(2)} -> {_targetColor.ToShortString(2)}]";
 
             return _string;
         }

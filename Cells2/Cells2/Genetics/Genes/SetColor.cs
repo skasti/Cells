@@ -49,7 +49,7 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log($"SET COLOR = {_color}");
+            this.Log(ToString());
             self.Color = _color;
             return 0;
         }
@@ -58,7 +58,7 @@ namespace Cells.Genetics.Genes
         public override string ToString()
         {
             if (_string == null)
-                _string = $"SetColor[{_color}]";
+                _string = $"SET Color[{_color}]";
 
             return _string;
         }

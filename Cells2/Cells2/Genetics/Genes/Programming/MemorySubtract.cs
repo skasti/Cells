@@ -21,8 +21,8 @@ namespace Cells.Genetics.Genes.Programming
                     throw new GenomeTooShortException();
 
                 return new MemorySubtract(
-                    fragment[1].AsByte(0xFF),
-                    fragment[2].AsByte(0xFF)
+                    memoryLocation: fragment[1].AsByte(0xFF),
+                    value: fragment[2].AsByte(0xFF)
                     );
             }
         }
@@ -53,7 +53,7 @@ namespace Cells.Genetics.Genes.Programming
         public override string ToString()
         {
             if (_string == null)
-                _string = $"SUB [{_memoryLocation:X2}x0] -= {_value}";
+                _string = $"{Name} [{_memoryLocation:X2}x0] -= {_value}";
 
             return _string;
         }
