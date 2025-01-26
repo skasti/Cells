@@ -25,7 +25,7 @@ namespace Cells.Genetics.Genes
             }
         }
         private readonly float _rate;
-        public float Cost { get; private set; } = 1f;
+        public float Cost { get; private set; } = 2f;
         public string Name { get; } = "MOVEMENT METABOLISM";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
@@ -41,7 +41,6 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log(ToString());
             self.MovementMetabolicRate = _rate;
             return 0;
         }

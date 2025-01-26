@@ -28,7 +28,7 @@ namespace Cells.Genetics.Genes.Programming
         }
         private readonly byte _otherMemoryLocation;
         private readonly byte _memoryLocation;
-        public float Cost { get; private set; } = 1f;
+        public float Cost { get; private set; } = 0.5f;
 
         public string Name { get; } = "ADD";
         public List<string> Log { get; } = new List<string>();
@@ -42,7 +42,6 @@ namespace Cells.Genetics.Genes.Programming
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log(ToString(), 1);
             var currentValue = self.Remember<byte>(_memoryLocation);
             var otherValue = self.Remember<byte>(_otherMemoryLocation);
             var newValue = (byte)(currentValue + otherValue);

@@ -24,7 +24,7 @@ namespace Cells.Genetics.Genes.Programming
 
                 return new MemoryReadProperty(
                     memoryLocation: fragment[1].AsByte(0xFF),
-                    targetMemoryLocation: fragment[2].AsByte(0xFF),
+                    targetMemoryLocation: fragment[2].AsByte(0x20),
                     property: fragment[3].AsByte(0xFF)
                     );
             }
@@ -50,7 +50,6 @@ namespace Cells.Genetics.Genes.Programming
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log(ToString(), 1);
             var target = self.Remember<GameObject>(_targetMemoryLocation);
 
             if (target == null)
@@ -128,7 +127,7 @@ namespace Cells.Genetics.Genes.Programming
         public override string ToString()
         {
             if (_string == null)
-                _string = $"{Name} [{_memoryLocation:X2}x0] = [{_memoryLocation:X2}x0].{_property}";
+                _string = $"{Name} [{_memoryLocation:X2}x0] = [{_targetMemoryLocation:X2}x0].{_property}";
 
             return _string;
         }

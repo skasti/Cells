@@ -30,7 +30,7 @@ namespace Cells.Genetics.Genes.Programming
         private readonly byte _otherMemoryLocation;
         private readonly byte _memoryLocation;
         private readonly byte _skipSize;
-        public float Cost { get; private set; } = 1f;
+        public float Cost { get; private set; } = 0.5f;
         public string Name { get; } = "IFGT";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
@@ -44,7 +44,6 @@ namespace Cells.Genetics.Genes.Programming
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log(ToString(), 1);
             var value = self.Remember<byte>(_memoryLocation);
             var otherValue = self.Remember<byte>(_otherMemoryLocation);
             var equals = value > otherValue;

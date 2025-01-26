@@ -28,7 +28,7 @@ namespace Cells.Genetics.Genes.Programming
         }
         private readonly byte _value;
         private readonly byte _memoryLocation;
-        public float Cost { get; private set; } = 1f;
+        public float Cost { get; private set; } = 0.5f;
 
         public string Name { get; } = "ADD";
         public List<string> Log { get; } = new List<string>();
@@ -46,7 +46,7 @@ namespace Cells.Genetics.Genes.Programming
             var newValue = (byte)(currentValue + _value);
             self.Remember(_memoryLocation, newValue);
 
-            this.Log($"{ToString()} ({newValue})");
+            this.Log($"result: {newValue}");
 
             return 0;
         }

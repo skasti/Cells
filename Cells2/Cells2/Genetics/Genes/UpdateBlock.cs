@@ -8,7 +8,7 @@ using Cells.Genetics.GeneTypes;
 
 namespace Cells.Genetics.Genes
 {
-    public class UpdateBlock: ICanUpdate
+    public class UpdateBlock : ICanUpdate
     {
         public class Maker : GeneMaker
         {
@@ -22,7 +22,9 @@ namespace Cells.Genetics.Genes
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
-                return new UpdateBlock(fragment[1]);
+                return new UpdateBlock(
+                    blockLength: fragment[1]
+                );
             }
         }
 
@@ -69,16 +71,14 @@ namespace Cells.Genetics.Genes
                 var updater = _updates[i];
                 updater.Log.Clear();
                 updater.LogIndentLevel = LogIndentLevel;
+                updater.Log($"{updater.ToString()} {{", 1);
                 var skip = updater.Update(self, deltaTime);
+                updater.LogIndentLevel = LogIndentLevel;
+                updater.Log($"}} [C: {updater.Cost} S: {skip}]");
                 Log.AddRange(updater.Log);
 
-                if (skip > 0)
-                {
-                    Log[Log.Count - 1] = $"{Log.Last()} [SKIP {skip}]";
-
-                    for (var j = i + 1; j < i + skip && j < _updates.Count; j++)
-                        this.Log($"- {_updates[j].ToString()}");
-                }
+                for (var j = i + 1; j < i + skip && j < _updates.Count; j++)
+                    this.Log($"- {_updates[j].ToString()}");
 
                 i += skip;
                 Cost += updater.Cost;
@@ -93,7 +93,7 @@ namespace Cells.Genetics.Genes
         public override string ToString()
         {
             if (_string == null)
-                _string =$"UpdateBlock[{_updates.Count}]";
+                _string = $"UpdateBlock[{_updates.Count}]";
 
             return _string;
         }

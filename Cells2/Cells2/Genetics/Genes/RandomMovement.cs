@@ -42,7 +42,6 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log(ToString(), 1);
             Cost = 0.1f;
             var speed = self.Velocity.Length();
 

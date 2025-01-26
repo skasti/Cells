@@ -24,7 +24,7 @@ namespace Cells.Genetics.Genes
         }
 
         public float PercentToBreak { get; private set; }
-        public float Cost { get; private set; } = 1f;
+        public float Cost { get; private set; } = 0.5f;
         public string Name { get; } = "BREAK";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;

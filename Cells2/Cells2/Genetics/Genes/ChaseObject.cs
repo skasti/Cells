@@ -20,7 +20,10 @@ namespace Cells.Genetics.Genes
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
-                return new ChaseObject(fragment[1].AsByte(0x20), fragment[2].AsFloat(1f, 250f));
+                return new ChaseObject(
+                    targetMemoryLocation: fragment[1].AsByte(0x20),
+                    desiredSpeed: fragment[2].AsFloat(1f, 250f)
+                    );
             }
         }
 

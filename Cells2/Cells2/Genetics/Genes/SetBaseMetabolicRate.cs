@@ -30,7 +30,7 @@ namespace Cells.Genetics.Genes
         public int LogIndentLevel { get; set; } = 0;
 
         private readonly float _rate;
-        public float Cost { get; private set; } = 1f;
+        public float Cost { get; private set; } = 2f;
 
         public SetBaseMetabolicRate(float rate)
         {
@@ -44,7 +44,6 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log(ToString());
             self.BaseMetabolicRate = _rate;
             return 0;
         }

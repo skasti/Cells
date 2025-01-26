@@ -24,11 +24,11 @@ namespace Cells.Genetics.Genes
                     throw new GenomeTooShortException();
 
                 return new ParthenoGenesis(
-                    fragment[1].AsFloat(500f, 100000f),
-                    fragment[2].AsFloat(0.2f, 0.5f),
-                    fragment[3].AsByte(0x10),
-                    fragment[4].AsByte(0x10),
-                    fragment[5].AsFloat(0.1f, 10f));
+                    energyThreshold: fragment[1].AsFloat(500f, 100000f),
+                    childSize: fragment[2].AsFloat(0.3f, 0.5f),
+                    skipOnBirth: fragment[3].AsByte(0x10),
+                    defaultSkip: fragment[4].AsByte(0x10),
+                    spawnFrequency: fragment[5].AsFloat(0.5f, 30f));
             }
         }
 
@@ -53,7 +53,6 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log(ToString(), 1);
             if (self.SpawnTime < _spawnFrequency)
             {
                 Cost = 0.1f;
@@ -75,14 +74,14 @@ namespace Cells.Genetics.Genes
                 {
                     self.TakeEnergy(energy);
                     self.BreedCount++;
-                    this.Log($"birth [{child.Position.ToShortString()} - {child.Energy:0.}]", -1);
+                    this.Log($"birth [{child.Position.ToShortString()} - {child.Energy:0.}]");
                     Cost = Math.Max(13f - _spawnFrequency, 1f);
                     return _skipOnBirth;
                 }
                 else
                 {
                     self.TakeEnergy(energy*0.5f);
-                    this.Log($"failed", -1);
+                    this.Log($"failed");
                     Cost = Math.Max(12f - _spawnFrequency, 1f);
                     return _defaultSkip;
                 }

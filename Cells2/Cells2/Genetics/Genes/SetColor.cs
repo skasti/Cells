@@ -49,7 +49,6 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log(ToString());
             self.Color = _color;
             return 0;
         }

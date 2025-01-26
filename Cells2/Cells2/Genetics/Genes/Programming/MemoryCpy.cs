@@ -28,7 +28,7 @@ namespace Cells.Genetics.Genes.Programming
         }
         private readonly byte _otherMemoryLocation;
         private readonly byte _memoryLocation;
-        public float Cost { get; private set; } = 1f;
+        public float Cost { get; private set; } = 0.5f;
         public string Name { get; } = "SET";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
@@ -43,7 +43,6 @@ namespace Cells.Genetics.Genes.Programming
         {
             var otherValue = self.Remember<byte>(_otherMemoryLocation);
             self.Remember(_memoryLocation, otherValue);
-            this.Log(ToString());
             return 0;
         }
 

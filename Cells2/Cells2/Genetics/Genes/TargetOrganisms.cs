@@ -22,10 +22,10 @@ namespace Cells.Genetics.Genes
                     throw new GenomeTooShortException();
 
                 return new TargetOrganisms(
-                    fragment[1].AsFloat(10f, 1000f),
-                    fragment[2].AsByte(0x10, 0x01),
-                    fragment[3].AsByte(0x10),
-                    fragment[4].AsByte(0x10));
+                    targetingRange: fragment[1].AsFloat(10f, 1000f),
+                    trackingCapacity: fragment[2].AsByte(0x10, 0x01),
+                    targetMemoryLocation: fragment[3].AsByte(0x10),
+                    noTargetsGoto: fragment[4].AsByte(0x10));
             }
         }
 
@@ -48,8 +48,6 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log(ToString(), 1);
-
             var organismsInRange = ObjectManager.Instance.GetObjectsWithinRange<Organism>(self, _targetingRange).Where(t => t.Color != self.Color && t.Radius < self.Radius)
                 .OrderBy(self.Distance).ToList();
 
@@ -70,7 +68,6 @@ namespace Cells.Genetics.Genes
                 this.Log($"remembering [{organismsInRange[i].Position.ToShortString()}] at [{memoryLocation:X2}x0]");
                 self.Remember(memoryLocation++, organismsInRange[i]);
             }
-            this.Log($"done");
             return 0;
         }
 

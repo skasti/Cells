@@ -28,7 +28,7 @@ namespace Cells.Genetics.Genes.Programming
         }
         private readonly byte _value;
         private readonly byte _memoryLocation;
-        public float Cost { get; private set; } = 1f;
+        public float Cost { get; private set; } = 0.5f;
         public string Name { get; } = "SET";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
@@ -42,7 +42,6 @@ namespace Cells.Genetics.Genes.Programming
         public int Update(Organism self, float deltaTime)
         {
             self.Remember(_memoryLocation, _value);
-            this.Log(ToString());
             return 0;
         }
 

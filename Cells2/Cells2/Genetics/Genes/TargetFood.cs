@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using Cells.GameObjects;
@@ -22,10 +23,10 @@ namespace Cells.Genetics.Genes
                     throw new GenomeTooShortException();
 
                 return new TargetFood(
-                    fragment[1].AsFloat(10f, 1000f),
-                    fragment[2].AsByte(0x10, 0x01),
-                    fragment[3].AsByte(0x10),
-                    fragment[4].AsByte(0x05));
+                    targetingRange: fragment[1].AsFloat(10f, 1000f),
+                    trackingCapacity: fragment[2].AsByte(0x10, 0x01),
+                    targetMemoryLocation: fragment[3].AsByte(0x10),
+                    noTargetsGoto: fragment[4].AsByte(0x05));
             }
         }
 
@@ -33,10 +34,12 @@ namespace Cells.Genetics.Genes
         private readonly byte _targetMemoryLocation;
         private readonly byte _trackingCapacity;
         private readonly byte _noTargetsGoto;
-        public float Cost => _targetingRange / 400f;
+        public float Cost => (_targetingRange / 200f) * (Math.Clamp(2f - _lastTrackInterval, 0.25f, 2f));
         public string Name { get; } = "TARGET FOOD";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
+        public float _lastTrackAge = 0f;
+        public float _lastTrackInterval = 0f;
 
         public TargetFood(float targetingRange, byte trackingCapacity, byte targetMemoryLocation, byte noTargetsGoto)
         {
@@ -48,10 +51,12 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log(ToString(), 1);
             var foodInRange = ObjectManager.Instance.GetObjectsWithinRange<Food>(self, _targetingRange)
                 .OrderBy(self.Distance).ToList();
             this.Log($"in range: {foodInRange.Count}");
+            _lastTrackInterval = self.Age - _lastTrackAge;
+            _lastTrackAge = self.Age;
+            this.Log($"last tracking interval: {_lastTrackInterval}");
 
             if (foodInRange.Count < 1)
             {
@@ -68,8 +73,6 @@ namespace Cells.Genetics.Genes
                 this.Log($"remembering [{foodInRange[i].Position.ToShortString()}] at [{memoryLocation:X2}x0]");
                 self.Remember(memoryLocation++, foodInRange[i]);
             }
-
-            this.Log($"done");
             return 0;
         }
 

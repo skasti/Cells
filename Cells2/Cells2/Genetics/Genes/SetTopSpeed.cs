@@ -28,7 +28,7 @@ namespace Cells.Genetics.Genes
         }
 
         private readonly float _topSpeed;
-        public float Cost { get; private set; } = 1f;
+        public float Cost { get; private set; } = 2f;
         public string Name { get; } = "TOP SPEED";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
@@ -45,7 +45,6 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log(ToString());
             self.TopSpeed = _topSpeed;
             return 0;
         }

@@ -8,6 +8,7 @@ using Cells.QuadTree;
 using Cells.Geometry;
 using Rectangle = Cells.Geometry.Rectangle;
 using System.Diagnostics;
+using System.Threading.Tasks;
 
 namespace Cells
 {
