@@ -9,6 +9,7 @@ using Cells.Geometry;
 using Rectangle = Cells.Geometry.Rectangle;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using System.Xml.XPath;
 
 namespace Cells
 {
@@ -17,7 +18,8 @@ namespace Cells
         public Stopwatch UpdateStopwatch { get; } = new Stopwatch();
         public Stopwatch CollisionStopwatch { get; } = new Stopwatch();
         public Stopwatch DrawStopwatch { get; } = new Stopwatch();
-        static Dictionary<Type,int> ObjectLimit = new Dictionary<Type, int>
+        public Stopwatch FindStopWatch { get; } = new Stopwatch();
+        static Dictionary<Type, int> ObjectLimit = new Dictionary<Type, int>
         {
             {typeof(Organism), 1000}
         };
@@ -56,12 +58,13 @@ namespace Cells
 
         public void Update(float deltaTime)
         {
-            UpdateStopwatch.Start();
+            FindStopWatch.Reset();
+            UpdateStopwatch.Restart();
             foreach (var obj in _gameObjects)
                 obj.Update(deltaTime);
             UpdateStopwatch.Stop();
 
-            CollisionStopwatch.Start();
+            CollisionStopwatch.Restart();
             CheckCollisions(deltaTime);
             CollisionStopwatch.Stop();
 
@@ -83,7 +86,7 @@ namespace Cells
             foreach (var gameObject in _gameObjects)
             {
                 var node = gameObject.CurrentNode ?? SearchTree;
-                node.FindObjects(gameObject.Bounds.Surround(4f, new Vector2(500,500)), o => o != gameObject && o.Bounds.Intersects(gameObject.Bounds))
+                node.FindObjects(gameObject.Bounds.Surround(4f, new Vector2(500, 500)), o => o != gameObject && o.Bounds.Intersects(gameObject.Bounds))
                     .ForEach(c => gameObject.HandleCollision(c, deltaTime));
             }
         }
@@ -98,12 +101,12 @@ namespace Cells
 
         public IEnumerable<T> GetObjectsWithinRange<T>(GameObject self, float range) where T : GameObject
         {
-            var searchBounds = new Rectangle(
-                self.Position - (Vector2.One * range * 1.5f),
-                Vector2.One * range * 3f
-            );
+            FindStopWatch.Start();
+            var searchBounds = self.Bounds.Inflated(range * 1.5f, range * 1.5f);
             var node = self.CurrentNode ?? SearchTree;
-            return node.FindObjects(searchBounds, o => (o is T) && (o != self) && !_removeQueue.Contains(o) && ((self.Position - o.Position).Length() < range)).Cast<T>();
+            var result = node.FindObjects(searchBounds, o => (o is T) && (o != self) && !_removeQueue.Contains(o) && ((self.Position - o.Position).Length() < range)).Cast<T>();
+            FindStopWatch.Stop();
+            return result;
         }
 
         public int Count<T>() where T : GameObject

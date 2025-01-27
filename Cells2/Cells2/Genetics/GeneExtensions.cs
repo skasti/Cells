@@ -34,7 +34,7 @@ namespace Cells.Genetics
 
         public static string Indent(int level)
         {
-             var output = new StringBuilder();
+            var output = new StringBuilder();
             for (var i = 0; i < level; i++)
                 output.Append("    ");
             return output.ToString();

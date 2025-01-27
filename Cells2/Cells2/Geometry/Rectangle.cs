@@ -185,6 +185,18 @@ namespace Cells.Geometry
             return false;
         }
 
+        public Rectangle Copy()
+        {
+            return new Rectangle(X, Y, Width, Height);
+        }
+
+        internal Rectangle Inflated(float horizontalAmount, float verticalAmount)
+        {
+            var copy = Copy();
+            copy.Inflate(horizontalAmount, verticalAmount);
+            return copy;
+        }
+
         public static bool operator !=(Rectangle a, Rectangle b)
         {
             return !(a == b);

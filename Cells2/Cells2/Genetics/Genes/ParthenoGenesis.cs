@@ -28,7 +28,7 @@ namespace Cells.Genetics.Genes
                     childSize: fragment[2].AsFloat(0.3f, 0.5f),
                     skipOnBirth: fragment[3].AsByte(0x10),
                     defaultSkip: fragment[4].AsByte(0x10),
-                    spawnFrequency: fragment[5].AsFloat(0.5f, 30f));
+                    spawnFrequency: fragment[5].AsFloat(0.5f, 20f));
             }
         }
 

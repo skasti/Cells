@@ -1,5 +1,6 @@
 ﻿using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Cells.GameObjects;
@@ -29,7 +30,7 @@ namespace Cells.Genetics.Genes
         }
 
         public int BlockLength { get; private set; }
-        public float Cost { get; private set; }
+        public float Cost { get; private set; } = 0f;
         public string Name { get; } = "UPDATE BLOCK";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
@@ -63,22 +64,36 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            Cost = 0f;
             Log.Clear();
+            if (_updates.Count == 0)
+            {
+                this.Log($"Update Block ({_updates.Count})");
+                return 0;
+            }
+            var sw = new Stopwatch();
+            Cost = 0;
             this.Log($"Update Block ({_updates.Count}) {{", 1);
             for (int i = 0; i < _updates.Count; i++)
             {
                 var updater = _updates[i];
                 updater.Log.Clear();
-                updater.LogIndentLevel = LogIndentLevel;
-                updater.Log($"{updater.ToString()} {{", 1);
+                sw.Restart();
                 var skip = updater.Update(self, deltaTime);
-                updater.LogIndentLevel = LogIndentLevel;
-                updater.Log($"}} [C: {updater.Cost} S: {skip}]");
-                Log.AddRange(updater.Log);
+                sw.Stop();
+                var dt = sw.Elapsed * (1f/deltaTime);
+                /*if (updater.Log.Count > 0)
+                {
+                    this.Log($"{updater.ToString()} {{", 1);
+                    updater.Log.ForEach((l) => this.Log(l));
+                    LogIndentLevel -= 1;
+                    this.Log($"}} [C: {updater.Cost} S: {skip} dT: {dt}]");
+                }
+                else
+                    this.Log($"{updater.ToString()} [C: {updater.Cost} S: {skip} dT: {dt}]");
 
                 for (var j = i + 1; j < i + skip && j < _updates.Count; j++)
                     this.Log($"- {_updates[j].ToString()}");
+                    */
 
                 i += skip;
                 Cost += updater.Cost;

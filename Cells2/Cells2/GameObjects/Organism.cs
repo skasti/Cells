@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using Cells.Genetics;
@@ -258,14 +259,14 @@ namespace Cells.GameObjects
             if (Dead)
                 return;
 
+            var sw = new Stopwatch();
+            sw.Start();
             UpdateCost = 0;
             CollisionCost = 0;
-
-            if (UpdateLog.Count > 0)
-                UpdateLog.Clear();
-
+            UpdateLog.Clear();
             Force = Vector2.Zero;
             UpdateLogIndentLevel = 0;
+
             foreach (var updateBlock in _updateBlocks)
             {
                 updateBlock.LogIndentLevel = UpdateLogIndentLevel;
@@ -274,6 +275,7 @@ namespace Cells.GameObjects
                 UpdateLog.AddRange(updateBlock.Log);
             }
 
+            sw.Stop();
             if (Force.Length() < 2f)
             {
                 Force = Vector2.Zero;

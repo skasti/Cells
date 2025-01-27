@@ -125,16 +125,18 @@ public class Game1 : Game
 
             foreach (var file in files)
             {
-                ObjectManager.Instance.Add(new Organism(new DNA(file)));
+                var organism = new Organism(new DNA(file));
+                ObjectManager.Instance.Add(organism);
                 numSpawns++;
 
-                if (numSpawns > 75) {
+                if (numSpawns > 50)
+                {
                     break;
                 }
             }
         }
 
-        for (int i = numSpawns; i < 100; i++)
+        for (int i = numSpawns; i < 60; i++)
         {
             ObjectManager.Instance.Add(new Organism(new DNA(20, 100)));
         }
@@ -177,6 +179,7 @@ public class Game1 : Game
     public static float Friction = 0.2f;
     private float DisplayedTimewarp = 1f;
     private float _timeWarpDisplayUpdate = 0.5f;
+    private float _updateTime = 1.0f;
     private TimeSpan _simulationTime = TimeSpan.FromSeconds(0);
     private int lastScrollPosition = Mouse.GetState().ScrollWheelValue;
 
@@ -189,6 +192,7 @@ public class Game1 : Game
     /// <param name="gameTime">Provides a snapshot of timing values.</param>
     protected override void Update(GameTime gameTime)
     {
+        GeneExtensions.LogStopwatch.Reset();
         keyboardState = Keyboard.GetState();
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || keyboardState.IsKeyDown(Keys.Escape))
             Exit();
@@ -244,7 +248,8 @@ public class Game1 : Game
                 if (_fittest != null)
                 {
                     var mate = organisms.FirstOrDefault(o => o != _fittest && _fittest.DNA.RelatedPercent(o.DNA) > 0.5f && _fittest.DNA.RelatedPercent(o.DNA) < 0.9f);
-                    for (var i = 0; i < 10; i++) {
+                    for (var i = 0; i < 10; i++)
+                    {
                         if (mate != null)
                             ObjectManager.Instance.Add(new Organism(new DNA(_fittest.DNA, mate.DNA)));
 
@@ -291,7 +296,9 @@ public class Game1 : Game
         if (Observing != null)
         {
             ViewPosition = Observing.Position;
-        } else {
+        }
+        else
+        {
             ViewPosition = WorldBounds * 0.5f;
         }
 
@@ -310,7 +317,7 @@ public class Game1 : Game
         _spriteBatch.DrawString(Arial, $"SimTime: T+{_simulationTime:g}", new Vector2(10, 10), Color.White);
         _spriteBatch.DrawString(Arial, $"Warp: {DisplayedTimewarp:0.00}x", new Vector2(10, 30), Color.White);
         _spriteBatch.DrawString(Arial, $"SpawnRate: {SpawnRate}", new Vector2(10, 50), Color.White);
-        _spriteBatch.DrawString(Arial, $"Fittest: {_fittest.Fitness}", new Vector2(10, 70), Color.White);
+        _spriteBatch.DrawString(Arial, $"Fittest: {_fittest?.Fitness ?? 0.0f}", new Vector2(10, 70), Color.White);
         _spriteBatch.DrawString(Arial, $"Organisms: {ObjectManager.Instance.Count<Organism>()}", new Vector2(10, 90), Color.White);
 
         if (Observing != null && keyboardState.IsKeyDown(Keys.O))
@@ -325,14 +332,16 @@ public class Game1 : Game
             _spriteBatch.DrawString(Arial, $"EnergyChangeRate: {Observing.EnergyChangeRate}", new Vector2(10, 250), Color.White);
 
             _spriteBatch.DrawString(Arial, $"Status: {Observing.Status}", new Vector2(10, 280), Color.White);
-            _spriteBatch.DrawString(Arial, $"Update Log:\n{String.Join("\n",Observing.UpdateLog)}", new Vector2(10, 300), Color.White);
-            _spriteBatch.DrawString(Arial, $"Collision Log:\n{String.Join("\n",Observing.CollisionLog)}", new Vector2(1000, 10), Color.White);
+            _spriteBatch.DrawString(Arial, $"Update Log:\n{String.Join("\n", Observing.UpdateLog)}", new Vector2(10, 300), Color.White);
+            _spriteBatch.DrawString(Arial, $"Collision Log:\n{String.Join("\n", Observing.CollisionLog)}", new Vector2(1000, 10), Color.White);
         }
         else if (keyboardState.IsKeyDown(Keys.D))
         {
-            _spriteBatch.DrawString(Arial, $"Update Time: {ObjectManager.Instance.UpdateStopwatch.Elapsed}", new Vector2(10, 120), Color.White);
-            _spriteBatch.DrawString(Arial, $"Collision Time: {ObjectManager.Instance.CollisionStopwatch.Elapsed}", new Vector2(10, 140), Color.White);
-            _spriteBatch.DrawString(Arial, $"Draw Time: {ObjectManager.Instance.DrawStopwatch.Elapsed}", new Vector2(10, 160), Color.White);
+            _spriteBatch.DrawString(Arial, $"Update Time: {ObjectManager.Instance.UpdateStopwatch.Elapsed / DisplayedTimewarp}", new Vector2(10, 120), Color.White);
+            _spriteBatch.DrawString(Arial, $"Collision Time: {ObjectManager.Instance.CollisionStopwatch.Elapsed / DisplayedTimewarp}", new Vector2(10, 140), Color.White);
+            _spriteBatch.DrawString(Arial, $"Draw Time: {ObjectManager.Instance.DrawStopwatch.Elapsed / DisplayedTimewarp}", new Vector2(10, 160), Color.White);
+            _spriteBatch.DrawString(Arial, $"Find Time: {ObjectManager.Instance.FindStopWatch.Elapsed / DisplayedTimewarp}", new Vector2(10, 180), Color.White);
+            _spriteBatch.DrawString(Arial, $"Log Time: {GeneExtensions.LogStopwatch.Elapsed / DisplayedTimewarp}", new Vector2(10, 200), Color.White);
         }
 
         _spriteBatch.End();

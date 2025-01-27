@@ -65,7 +65,7 @@ namespace Cells.Genetics.Genes
             {
                 this.Log("reached target", -1);
                 self.Status = $"Chasing {target.GetType().Name} - Reached";
-                return 0;
+                return 1;
             }
 
             self.Status = $"Chasing {target.GetType().Name}";
