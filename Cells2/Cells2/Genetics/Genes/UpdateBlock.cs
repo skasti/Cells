@@ -81,7 +81,7 @@ namespace Cells.Genetics.Genes
                 var skip = updater.Update(self, deltaTime);
                 sw.Stop();
                 var dt = sw.Elapsed * (1f/deltaTime);
-                /*if (updater.Log.Count > 0)
+                if (updater.Log.Count > 0)
                 {
                     this.Log($"{updater.ToString()} {{", 1);
                     updater.Log.ForEach((l) => this.Log(l));
@@ -93,7 +93,6 @@ namespace Cells.Genetics.Genes
 
                 for (var j = i + 1; j < i + skip && j < _updates.Count; j++)
                     this.Log($"- {_updates[j].ToString()}");
-                    */
 
                 i += skip;
                 Cost += updater.Cost;
