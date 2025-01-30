@@ -42,13 +42,12 @@ namespace Cells.Genetics.Genes
 
         public int Update(Organism self, float deltaTime)
         {
-            this.Log($"CHASE OBJECT [{_targetMemoryLocation:X2}]", 1);
             Cost = 1f;
             var target = self.Remember<GameObject>(_targetMemoryLocation);
 
             if (target == null)
             {
-                this.Log("no target", -1);
+                this.Log("no target");
                 return 0;
             }
 
@@ -56,14 +55,14 @@ namespace Cells.Genetics.Genes
 
             if (target.Removed)
             {
-                this.Log($"forget [{_targetMemoryLocation:X2}x0]", -1);
+                this.Log($"forget [{_targetMemoryLocation:X2}x0]");
                 self.Forget(_targetMemoryLocation);
                 return 2;
             }
 
             if ((target.Position - self.Position).Length() < self.Radius * 0.5)
             {
-                this.Log("reached target", -1);
+                this.Log("reached target");
                 self.Status = $"Chasing {target.GetType().Name} - Reached";
                 return 1;
             }
@@ -76,7 +75,7 @@ namespace Cells.Genetics.Genes
             var forceAdd = (direction / deltaTime) * self.Mass;
             self.Force += forceAdd;
 
-            this.Log($"add force: {forceAdd.ToShortString()} ({self.Force.ToShortString()})",-1);
+            this.Log($"add force: {forceAdd.ToShortString()} ({self.Force.ToShortString()})");
             Cost = 2f;
             return 1;
         }
