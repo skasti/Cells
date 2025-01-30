@@ -86,10 +86,10 @@ namespace Cells.Genetics.Genes
                     this.Log($"{updater.ToString()} {{", 1);
                     updater.Log.ForEach((l) => this.Log(l));
                     LogIndentLevel -= 1;
-                    this.Log($"}} [C: {updater.Cost} S: {skip} dT: {dt}]");
+                    this.Log($"}} [C: {updater.Cost} S: {skip} dT: {dt.Microseconds}]");
                 }
                 else
-                    this.Log($"{updater.ToString()} [C: {updater.Cost} S: {skip} dT: {dt}]");
+                    this.Log($"{updater.ToString()} [C: {updater.Cost} S: {skip} dT: {dt.Microseconds}]");
 
                 for (var j = i + 1; j < i + skip && j < _updates.Count; j++)
                     this.Log($"- {_updates[j].ToString()}");

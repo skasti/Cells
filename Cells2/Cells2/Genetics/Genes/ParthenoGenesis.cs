@@ -64,9 +64,11 @@ namespace Cells.Genetics.Genes
             {
                 this.Log($"enough energy ({self.Energy:0.} >= {EnergyThreshold:0.})");
                 var spawnDistance = self.Radius * 2;
-                var spawnDirection = self.Position - (Game1.WorldBounds * 0.5f);
+                var spawnDirection = new Vector2(Game1.Random.NextSingle() * 2f - 1f, Game1.Random.NextSingle() * 2f - 1f);
                 spawnDirection.Normalize();
-                spawnDirection = -spawnDirection;
+                /*self.Position - (Game1.WorldBounds * 0.5f);
+                spawnDirection.Normalize();
+                spawnDirection = -spawnDirection;*/
 
                 var energy = self.Energy * _childSize;
                 var child = new Organism(new DNA(self.DNA), energy, self.Position + spawnDirection * spawnDistance);
@@ -80,7 +82,7 @@ namespace Cells.Genetics.Genes
                 }
                 else
                 {
-                    self.TakeEnergy(energy*0.5f);
+                    self.TakeEnergy(energy * 0.5f);
                     this.Log($"failed");
                     Cost = Math.Max(12f - _spawnFrequency, 1f);
                     return _defaultSkip;
