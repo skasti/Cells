@@ -30,6 +30,12 @@
 /processorParam:TextureFormat=Compressed
 /build:arial.spritefont
 
+#begin arial.spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:TextureFormat=Compressed
+/build:arial small.spritefont
+
 #begin virus.png
 /importer:TextureImporter
 /processor:TextureProcessor

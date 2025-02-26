@@ -197,6 +197,13 @@ namespace Cells.Geometry
             return copy;
         }
 
+        internal Rectangle Shrunk(float amount)
+        {
+            var newSize = Size * (1f - amount);
+            var sizeDiff = newSize - Size;
+            return Inflated(sizeDiff.X * 0.5f, sizeDiff.Y * 0.5f);
+        }
+
         public static bool operator !=(Rectangle a, Rectangle b)
         {
             return !(a == b);

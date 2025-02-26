@@ -11,5 +11,6 @@ namespace Cells.Genetics.GeneTypes
         Type CollidesWith { get; }
         void HandleCollision(Organism self, GameObject other, float deltaTime);
         void LoadBlock(int startIndex, List<IAmAGene> genes);
+        void Update(float deltaTime);
     }
 }

@@ -8,43 +8,50 @@ namespace Cells.Genetics.Genes.Programming
 {
     public class Skip: ICanUpdate
     {
-        public class Maker : GeneMaker
+        public class Maker : GeneMaker<Skip>
         {
-            public Maker()
-                : base(0x03, 2)
+            public Maker(byte markerFrom, byte markerTo)
+                : base(markerFrom, markerTo, 2)
             {
             }
 
-            public override IAmAGene Make(byte[] fragment)
+            public override Skip Make(byte[] fragment)
             {
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
                 return new Skip(fragment[1].AsByte(0x10));
             }
+
+            public override byte[] MakeFragment(Skip gene)
+            {
+                var fragment = base.MakeFragment(gene);
+                fragment[1] = gene.SkipCount;
+                return fragment;
+            }
         }
 
-        private readonly byte _jumpSize;
+        public readonly byte SkipCount;
         public float Cost { get; private set; } = 0.5f;
         public string Name { get; } = "SKIP";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
 
-        public Skip(byte jumpSize)
+        public Skip(byte skipCount)
         {
-            _jumpSize = jumpSize;
+            SkipCount = skipCount;
         }
 
         public int Update(Organism self, float deltaTime)
         {
-            return _jumpSize;
+            return SkipCount;
         }
 
         private string _string;
         public override string ToString()
         {
             if (_string == null)
-                _string = $"{Name} [{_jumpSize}]";
+                _string = $"{Name} [{SkipCount}]";
 
             return _string;
         }

@@ -10,18 +10,20 @@ using Rectangle = Cells.Geometry.Rectangle;
 using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Xml.XPath;
+using System.Threading;
 
 namespace Cells
 {
     public class ObjectManager
     {
+        private TaskScheduler Scheduler = new CustomThreadPool(16);
         public Stopwatch UpdateStopwatch { get; } = new Stopwatch();
         public Stopwatch CollisionStopwatch { get; } = new Stopwatch();
         public Stopwatch DrawStopwatch { get; } = new Stopwatch();
         public Stopwatch FindStopWatch { get; } = new Stopwatch();
         static Dictionary<Type, int> ObjectLimit = new Dictionary<Type, int>
         {
-            {typeof(Organism), 1000}
+            {typeof(Organism), 600}
         };
 
         static readonly ObjectManager _instance = new ObjectManager();
@@ -31,7 +33,7 @@ namespace Cells
         private readonly List<GameObject> _addQueue = new List<GameObject>();
         private readonly List<GameObject> _removeQueue = new List<GameObject>();
 
-        private readonly Node SearchTree = new Node(new Rectangle(Vector2.Zero, Game1.WorldBounds));
+        public readonly Node SearchTree = new Node(new Rectangle(Vector2.Zero, Game1.WorldSize));
 
         public bool Add(GameObject gameObject)
         {
@@ -83,20 +85,39 @@ namespace Cells
 
         public void CheckCollisions(float deltaTime)
         {
+            // Parallel.ForEach(_gameObjects,
+            //     new ParallelOptions{
+            //         MaxDegreeOfParallelism = -1,
+            //     },
+            //     (gameObject, token) => {
+            //         var node = gameObject.CurrentNode ?? SearchTree;
+            //         node.FindObjects(gameObject.Bounds.Inflated(250f, 250f), o => o != gameObject && o is ICollide && o.Bounds.Intersects(gameObject.Bounds))
+            //             .ForEach(c => gameObject.HandleCollision(c, deltaTime));
+            //     }
+            // );
+
             foreach (var gameObject in _gameObjects)
             {
-                var node = gameObject.CurrentNode ?? SearchTree;
-                node.FindObjects(gameObject.Bounds.Surround(4f, new Vector2(500, 500)), o => o != gameObject && o.Bounds.Intersects(gameObject.Bounds))
+                if (!(gameObject is ICollide))
+                    continue;
+
+                var node = gameObject.CurrentNode;
+                if (node == null) {
+                    continue;
+                }
+                node.FindObjects(gameObject.Bounds.Inflated(250f, 250f), o => o != gameObject && o is ICollide && o.Bounds.Intersects(gameObject.Bounds))
                     .ForEach(c => gameObject.HandleCollision(c, deltaTime));
             }
         }
 
         public void Draw(SpriteBatch spriteBatch)
         {
+            DrawStopwatch.Restart();
             spriteBatch.Begin();
             foreach (var obj in _gameObjects.OrderBy(o => o.DrawPriority))
                 obj.Draw(spriteBatch);
             spriteBatch.End();
+            DrawStopwatch.Stop();
         }
 
         public IEnumerable<T> GetObjectsWithinRange<T>(GameObject self, float range) where T : GameObject
@@ -112,6 +133,10 @@ namespace Cells
         public int Count<T>() where T : GameObject
         {
             return _gameObjects.Count(go => go is T);
+        }
+
+        public int Count() {
+            return _gameObjects.Count;
         }
 
         public IEnumerable<T> GetObjects<T>()

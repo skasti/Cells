@@ -1,4 +1,5 @@
-﻿using Cells.Genetics.GeneTypes;
+﻿using System;
+using Cells.Genetics.GeneTypes;
 
 namespace Cells.Genetics
 {
@@ -9,7 +10,9 @@ namespace Cells.Genetics
 
         int Size { get; }
         int ArgumentBytes { get; }
+        Type GeneType { get; }
 
         IAmAGene Make(byte[] fragment);
+        byte[] ToFragment(IAmAGene gene);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Cells
 {
@@ -37,6 +38,18 @@ namespace Cells
                 default:
                     throw new ArgumentException($"unsupported number of decimals: {decimals}", "decimals");
             }
+        }
+
+        public static Vector2 Normalized(this Vector2 v)
+        {
+            var r = new Vector2(v.X, v.Y);
+            r.Normalize();
+            return r;
+        }
+
+        public static Vector2 Size(this Texture2D texture)
+        {
+            return new Vector2(texture.Width, texture.Height);
         }
     }
 }

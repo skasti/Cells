@@ -17,6 +17,8 @@ namespace Cells.QuadTree
         public Rectangle Bounds { get; private set; }
         public List<GameObject> Objects { get; private set; } = new List<GameObject>();
 
+        public int ObjectCount => Objects.Count + Children.Sum(c => c.ObjectCount);
+
         public Node(Rectangle bounds)
         {
             Bounds = bounds;
@@ -180,6 +182,13 @@ public List<GameObject> FindObjects(Vector2 position, float range, Func<GameObje
 
                 return this;
             } else {
+                // if (Parent == null)
+                // {
+                //     if (!Objects.Contains(gameObject))
+                //         Objects.Add(gameObject);
+                //     return this;
+                // }
+
                 if (Objects.Contains(gameObject))
                     Objects.Remove(gameObject);
 

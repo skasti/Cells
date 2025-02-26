@@ -9,16 +9,21 @@ namespace Cells.GameObjects
 {
     public abstract class GameObject
     {
-        public enum ReadableProperties {
+        public enum ReadableProperty {
             Position_X,
             Position_Y,
+            Relative_X,
+            Relative_Y,
             Mass,
             Radius,
             Color_R,
             Color_G,
             Color_B,
             Age,
-            Alive
+            Alive,
+            Energy,
+            RelatedPercent,
+            Fitness
         }
         public Node CurrentNode { get; set; }
         public Vector2 Position { get; set; }
@@ -41,10 +46,12 @@ namespace Cells.GameObjects
         public bool Removed { get; private set; }
         public float TopSpeed { get; set; }
         public float MaxForceRatio { get; set; }
-        public float MaxForce => Mass * MaxForceRatio;
+        public float MaxForce => Math.Clamp(Mass * MaxForceRatio, 10f, 100000f);
+        protected float Friction = Game1.Friction;
 
         protected GameObject()
         {
+            TopSpeed = 200f;
             Mass = 10f;
             Acceleration = Vector2.Zero;
             Position = Vector2.Zero;
@@ -65,17 +72,17 @@ namespace Cells.GameObjects
             CalculatePhysics(deltaTime);
             //CheckBorders();
 
-            if (Position != prevPosition)
-                CurrentNode = CurrentNode?.UpdateObjectNode(this);
+            if (Position != prevPosition || CurrentNode == null)
+                CurrentNode = (CurrentNode ?? ObjectManager.Instance.SearchTree).UpdateObjectNode(this);
 
             prevPosition = Position;
         }
 
         protected virtual void CheckBorders()
         {
-            if (Position.X > Game1.WorldBounds.X)
+            if (Position.X > Game1.WorldSize.X)
             {
-                Position = new Vector2(Game1.WorldBounds.X, Position.Y);
+                Position = new Vector2(Game1.WorldSize.X, Position.Y);
                 Velocity = Velocity.FlipX();
             }
             if (Position.X < 0)
@@ -84,9 +91,9 @@ namespace Cells.GameObjects
                 Velocity = Velocity.FlipX();
             }
 
-            if (Position.Y > Game1.WorldBounds.Y)
+            if (Position.Y > Game1.WorldSize.Y)
             {
-                Position = new Vector2(Position.X, Game1.WorldBounds.Y);
+                Position = new Vector2(Position.X, Game1.WorldSize.Y);
                 Velocity = Velocity.FlipY();
             }
 
@@ -114,8 +121,13 @@ namespace Cells.GameObjects
                 Velocity = newVelocity;
             }
 
+            if (Velocity.X == float.NaN || Velocity.Y == float.NaN)
+            {
+                Velocity = Vector2.Zero;
+            }
+
             Position += Velocity * deltaTime;
-            ExternalForce = ((-Velocity * Mass) / deltaTime) * Game1.Friction;
+            ExternalForce = ((-Velocity * Mass) * Friction);
         }
 
         public virtual void Die(bool remove)
@@ -126,6 +138,7 @@ namespace Cells.GameObjects
             {
                 Removed = true;
                 ObjectManager.Instance.Remove(this);
+                CurrentNode?.Remove(this);
             }
         }
 
@@ -134,10 +147,23 @@ namespace Cells.GameObjects
 
         }
 
-
         public virtual void HandleCollision(GameObject other, float deltaTime)
         {
+            var relativePos = other.Position - Position;
+            var bounds = Bounds.Width * 0.5f + other.Bounds.Width * 0.5f;
+            var distance = relativePos.Length();
+            if (distance < bounds)
+            {
+                var relativeVelocity = other.Velocity - Velocity;
+                var direction = Vector2.Normalize(relativePos);
+                var vAlongDirection = relativeVelocity.X * direction.X + relativeVelocity.Y * direction.Y;
 
+                var impulse = -vAlongDirection * 1.5f / (1f / Mass + 1f / other.Mass);
+                var collisionForce = -direction * impulse / deltaTime;
+                //var collisionForce = (-direction * (other.Velocity * other.Mass)) / deltaTime;
+                var repulsionForce = (-direction * Math.Max(bounds*0.9f-distance, 0f) * Mass) / deltaTime;
+                ExternalForce += collisionForce + repulsionForce;
+            }
         }
     }
 }

@@ -7,21 +7,28 @@ using Microsoft.Xna.Framework;
 
 namespace Cells.Genetics.Genes
 {
-    public class SetBaseMetabolicRate : ITrait, ICanUpdate
+    public class SetBaseMetabolicRate : ITrait
     {
-        public class Maker : GeneMaker
+        public class Maker : GeneMaker<SetBaseMetabolicRate>
         {
-            public Maker()
-                : base(0x46, 0x47, 2)
+            public Maker(byte markerFrom, byte? markerTo = null)
+                : base(markerFrom, markerTo ?? markerFrom, 2)
             {
             }
 
-            public override IAmAGene Make(byte[] fragment)
+            public override SetBaseMetabolicRate Make(byte[] fragment)
             {
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
                 return new SetBaseMetabolicRate(fragment[1].AsFloat(0.001f, 10f));
+            }
+
+            public override byte[] MakeFragment(SetBaseMetabolicRate gene)
+            {
+                var fragment = base.MakeFragment(gene);
+                fragment[1] = gene.Rate.AsGeneByte(0.001f, 10f);
+                return fragment;
             }
         }
 
@@ -29,30 +36,24 @@ namespace Cells.Genetics.Genes
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
 
-        private readonly float _rate;
+        public readonly float Rate;
         public float Cost { get; private set; } = 2f;
 
         public SetBaseMetabolicRate(float rate)
         {
-            _rate = rate;
+            Rate = rate;
         }
 
-        public void Apply(Organism self)
+        public void Apply(Organism self, List<IAmAGene> genes)
         {
-            self.BaseMetabolicRate = _rate;
-        }
-
-        public int Update(Organism self, float deltaTime)
-        {
-            self.BaseMetabolicRate = _rate;
-            return 0;
+            self.BaseMetabolicRate = Rate;
         }
 
         private string _string = null;
         public override string ToString()
         {
             if (_string == null)
-                _string = $"SET BaseMetabolicRate[{_rate:0.0000}]";
+                _string = $"SET BaseMetabolicRate[{Rate:0.0000}]";
 
             return _string;
         }

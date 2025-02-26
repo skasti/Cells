@@ -8,42 +8,50 @@ namespace Cells.Genetics.Genes
 {
     public class ChaseObject : ICanUpdate
     {
-        public class Maker : GeneMaker
+        public class Maker : GeneMaker<ChaseObject>
         {
-            public Maker()
-                : base(0x90, 0x92, 3)
+            public Maker(byte markerFrom, byte markerTo)
+                : base(markerFrom, markerTo, 3)
             {
             }
 
-            public override IAmAGene Make(byte[] fragment)
+            public override ChaseObject Make(byte[] fragment)
             {
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
                 return new ChaseObject(
-                    targetMemoryLocation: fragment[1].AsByte(0x20),
+                    targetAddress: fragment[1].AsByte(0x20),
                     desiredSpeed: fragment[2].AsFloat(1f, 250f)
                     );
             }
+
+            public override byte[] MakeFragment(ChaseObject gene)
+            {
+                var fragment = base.MakeFragment(gene);
+                fragment[1] = gene.TargetAddress;
+                fragment[2] = gene.DesiredSpeed.AsGeneByte(1f, 250f);
+                return fragment;
+            }
         }
 
-        private readonly byte _targetMemoryLocation;
-        private readonly float _desiredSpeed;
+        public readonly byte TargetAddress;
+        public readonly float DesiredSpeed;
         public float Cost { get; private set; } = 1f;
         public string Name { get; } = "CHASE OBJECT";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
 
-        public ChaseObject(byte targetMemoryLocation, float desiredSpeed)
+        public ChaseObject(byte targetAddress, float desiredSpeed)
         {
-            _targetMemoryLocation = targetMemoryLocation;
-            _desiredSpeed = desiredSpeed;
+            TargetAddress = targetAddress;
+            DesiredSpeed = desiredSpeed;
         }
 
         public int Update(Organism self, float deltaTime)
         {
             Cost = 1f;
-            var target = self.Remember<GameObject>(_targetMemoryLocation);
+            var target = self.Remember<GameObject>(TargetAddress);
 
             if (target == null)
             {
@@ -55,9 +63,9 @@ namespace Cells.Genetics.Genes
 
             if (target.Removed)
             {
-                this.Log($"forget [{_targetMemoryLocation:X2}x0]");
-                self.Forget(_targetMemoryLocation);
-                return 2;
+                this.Log($"forget [0x{TargetAddress:X2}]");
+                self.Forget(TargetAddress);
+                return 0;
             }
 
             if ((target.Position - self.Position).Length() < self.Radius * 0.5)
@@ -71,7 +79,7 @@ namespace Cells.Genetics.Genes
 
             var direction = target.Position - self.Position;
             direction.Normalize();
-            direction *= _desiredSpeed;
+            direction *= DesiredSpeed;
             var forceAdd = (direction / deltaTime) * self.Mass;
             self.Force += forceAdd;
 
@@ -84,7 +92,7 @@ namespace Cells.Genetics.Genes
         public override string ToString()
         {
             if (_string == null)
-                _string = $"{Name} [{_targetMemoryLocation}]";
+                _string = $"{Name} [{TargetAddress}]";
 
             return _string;
         }

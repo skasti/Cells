@@ -8,41 +8,49 @@ namespace Cells.Genetics.Genes.Programming
 {
     public class MemoryCpy : ICanUpdate
     {
-        public class Maker : GeneMaker
+        public class Maker : GeneMaker<MemoryCpy>
         {
-            public Maker()
-                : base(0xF2, 0xF3, 3)
+            public Maker(byte markerFrom, byte markerTo)
+                : base(markerFrom, markerTo, 3)
             {
             }
 
-            public override IAmAGene Make(byte[] fragment)
+            public override MemoryCpy Make(byte[] fragment)
             {
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
                 return new MemoryCpy(
-                    memoryLocation: fragment[1].AsByte(0xFF),
-                    otherMemoryLocation: fragment[2].AsByte(0xFF)
+                    address: fragment[1],
+                    otherAddress: fragment[2]
                     );
             }
+
+            public override byte[] MakeFragment(MemoryCpy gene)
+            {
+                var fragment = base.MakeFragment(gene);
+                fragment[1] = gene.Address;
+                fragment[2] = gene.OtherAddress;
+                return fragment;
+            }
         }
-        private readonly byte _otherMemoryLocation;
-        private readonly byte _memoryLocation;
+        public readonly byte OtherAddress;
+        public readonly byte Address;
         public float Cost { get; private set; } = 0.5f;
-        public string Name { get; } = "SET";
+        public string Name { get; } = "CPY";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
 
-        public MemoryCpy(byte memoryLocation, byte otherMemoryLocation)
+        public MemoryCpy(byte address, byte otherAddress)
         {
-            _memoryLocation = memoryLocation;
-            _otherMemoryLocation = otherMemoryLocation;
+            Address = address;
+            OtherAddress = otherAddress;
         }
 
         public int Update(Organism self, float deltaTime)
         {
-            var otherValue = self.Remember<byte>(_otherMemoryLocation);
-            self.Remember(_memoryLocation, otherValue);
+            var otherValue = self.Remember(OtherAddress);
+            self.Remember(Address, otherValue);
             return 0;
         }
 
@@ -50,7 +58,7 @@ namespace Cells.Genetics.Genes.Programming
         public override string ToString()
         {
             if (_string == null)
-                _string = $"{Name} [{_memoryLocation:X2}x0] = [{_otherMemoryLocation:X2}x0]";
+                _string = $"{Name} [0x{Address:X2}] = [0x{OtherAddress:X2}]";
 
             return _string;
         }

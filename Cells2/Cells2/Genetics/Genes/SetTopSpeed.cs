@@ -7,27 +7,34 @@ using Microsoft.Xna.Framework;
 
 namespace Cells.Genetics.Genes
 {
-    public class SetTopSpeed : ITrait, ICanUpdate
+    public class SetTopSpeed : ITrait
     {
-        public class Maker : GeneMaker
+        public class Maker : GeneMaker<SetTopSpeed>
         {
-            public Maker()
-                : base(0x39, 0x3F, 2)
+            public Maker(byte markerFrom, byte markerTo)
+                : base(markerFrom, markerTo, 2)
             {
             }
 
-            public override IAmAGene Make(byte[] fragment)
+            public override SetTopSpeed Make(byte[] fragment)
             {
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
                 return new SetTopSpeed(
-                    fragment[1].AsFloat(50f, 500f)
+                    topSpeed: fragment[1].AsFloat(50f, 500f)
                     );
+            }
+
+            public override byte[] MakeFragment(SetTopSpeed gene)
+            {
+                var fragment = base.MakeFragment(gene);
+                fragment[1] = gene.TopSpeed.AsGeneByte(50f, 500f);
+                return fragment;
             }
         }
 
-        private readonly float _topSpeed;
+        public readonly float TopSpeed;
         public float Cost { get; private set; } = 2f;
         public string Name { get; } = "TOP SPEED";
         public List<string> Log { get; } = new List<string>();
@@ -35,25 +42,19 @@ namespace Cells.Genetics.Genes
 
         public SetTopSpeed(float topSpeed)
         {
-            _topSpeed = topSpeed;
+            TopSpeed = topSpeed;
         }
 
-        public void Apply(Organism self)
+        public void Apply(Organism self, List<IAmAGene> genes)
         {
-            self.TopSpeed = _topSpeed;
-        }
-
-        public int Update(Organism self, float deltaTime)
-        {
-            self.TopSpeed = _topSpeed;
-            return 0;
+            self.TopSpeed = TopSpeed;
         }
 
         private string _string = null;
         public override string ToString()
         {
             if (_string == null)
-                _string = $"SET TopSpeed[{_topSpeed}]";
+                _string = $"SET TopSpeed[{TopSpeed}]";
 
             return _string;
         }

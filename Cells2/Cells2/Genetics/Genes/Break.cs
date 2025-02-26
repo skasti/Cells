@@ -5,21 +5,28 @@ using Cells.Genetics.GeneTypes;
 
 namespace Cells.Genetics.Genes
 {
-    public class Break: ICanUpdate
+    public class Break : ICanUpdate
     {
-        public class Maker: GeneMaker
+        public class Maker : GeneMaker<Break>
         {
-            public Maker()
-                : base(0x00, 0x02, 2)
+            public Maker(byte markerFrom, byte? markerTo = null)
+                : base(markerFrom, markerTo ?? markerFrom, 2)
             {
             }
 
-            public override IAmAGene Make(byte[] fragment)
+            public override Break Make(byte[] fragment)
             {
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
-                return new Break(fragment[1].AsFloat(0.01f,1f));
+                return new Break(fragment[1].AsFloat(0.01f, 1f));
+            }
+
+            public override byte[] MakeFragment(Break gene)
+            {
+                var fragment = base.MakeFragment(gene);
+                fragment[1] = gene.PercentToBreak.AsGeneByte(0.01f, 1f);
+                return fragment;
             }
         }
 
@@ -38,7 +45,7 @@ namespace Cells.Genetics.Genes
         {
             var forceAdd = (-self.Velocity / deltaTime) * self.Mass * PercentToBreak;
             self.Force += forceAdd;
-            this.Log($"BREAKING({PercentToBreak*100f:0.}%): {forceAdd.ToShortString()} ({self.Force.ToShortString()})");
+            this.Log($"BREAKING({PercentToBreak * 100f:0.}%): {forceAdd.ToShortString()} ({self.Force.ToShortString()})");
             return 0;
         }
 
@@ -46,7 +53,7 @@ namespace Cells.Genetics.Genes
         public override string ToString()
         {
             if (_string == null)
-                _string = $"{Name} [{PercentToBreak*100f:0.}%]";
+                _string = $"{Name} [{PercentToBreak * 100f:0.}%]";
 
             return _string;
         }

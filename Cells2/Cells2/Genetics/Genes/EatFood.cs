@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using Cells.GameObjects;
 using Cells.Genetics.Exceptions;
@@ -8,52 +9,62 @@ namespace Cells.Genetics.Genes
 {
     public class EatFood : CollisionHandler
     {
-        public class Maker : GeneMaker
+        public class Maker : GeneMaker<EatFood>
         {
-            public Maker()
-                : base(0x10, 0x19, 5)
+            public Maker(byte markerFrom, byte markerTo)
+                : base(markerFrom, markerTo, 5)
             {
             }
 
-            public override IAmAGene Make(byte[] fragment)
+            public override EatFood Make(byte[] fragment)
             {
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
                 return new EatFood(
-                    fragment[1].AsByte(0x10),
-                    fragment[2].AsByte(0x10),
-                    fragment[3].AsByte(0x10),
-                    fragment[3].AsByte(0x10));
+                    blockLength: fragment[1].AsByte(0x10),
+                    targetAddress: fragment[2].AsByte(0x10),
+                    tooFarGoto: fragment[3].AsByte(0x10),
+                    deadGoto: fragment[3].AsByte(0x10));
+            }
+
+            public override byte[] MakeFragment(EatFood gene)
+            {
+                var fragment = base.MakeFragment(gene);
+                fragment[1] = gene.BlockLength.AsGeneByte();
+                fragment[2] = gene.TargetAddress;
+                fragment[3] = gene.TooFarGoto;
+                fragment[4] = gene.DeadGoto;
+                return fragment;
             }
         }
 
-        private readonly byte _targetMemoryLocation;
-        private readonly byte _tooFarGoto;
-        private readonly byte _deadGoto;
+        public readonly byte TargetAddress;
+        public readonly byte TooFarGoto;
+        public readonly byte DeadGoto;
         public override string Name { get; } = "EAT FOOD";
 
-        public EatFood(byte blockLength, byte targetMemoryLocation, byte tooFarGoto, byte deadGoto)
-            :base(blockLength, typeof(Food))
+        public EatFood(byte blockLength, byte targetAddress, byte tooFarGoto, byte deadGoto)
+            : base(blockLength, typeof(Food))
         {
             AllowMultiple = false;
-            _targetMemoryLocation = targetMemoryLocation;
-            _tooFarGoto = tooFarGoto;
-            _deadGoto = deadGoto;
+            TargetAddress = targetAddress;
+            TooFarGoto = tooFarGoto;
+            DeadGoto = deadGoto;
         }
 
         public override void HandleCollision(Organism self, GameObject other, float deltaTime)
         {
             Cost = 0f;
-            this.Log($"EAT FOOD {other.Position.ToShortString()}",1);
+            this.Log($"EAT FOOD {other.Position.ToShortString()}", 1);
             StartIndex = 0;
             var food = other as Food;
 
             if (!other.Alive)
             {
-                this.Log($"is dead, forget target [{_targetMemoryLocation:X2}x0]");
-                StartIndex = _deadGoto;
-                self.Forget(_targetMemoryLocation);
+                this.Log($"is dead, forget target [0x{TargetAddress:X2}]");
+                StartIndex = DeadGoto;
+                self.Forget(TargetAddress);
                 base.HandleCollision(self, other, deltaTime);
                 this.Log("done", -1);
                 return;
@@ -63,19 +74,27 @@ namespace Cells.Genetics.Genes
 
             var distance = (self.Position - other.Position).Length();
 
-            if (distance < self.Radius + other.Bounds.Width*0.5f)
+            if (distance < self.Radius + other.Bounds.Width * 0.5f)
             {
-                self.Status = "Eating";
-                var taken = food.TakeEnergy(self.Energy*deltaTime);
-                self.GiveEnergy(taken);
-                this.Log($"eating ({taken})");
+                var energyToTake = Math.Max(self.Energy, 500) * deltaTime;
+                energyToTake = Math.Min(energyToTake, self.MaxEnergy - self.Energy);
+
+                if (energyToTake > 1f)
+                {
+                    self.Status = "Eating";
+                    var taken = food.TakeEnergy(energyToTake);
+                    self.GiveEnergy(taken);
+                    this.Log($"eating ({taken})");
+                }
+                else
+                    this.Log($"full");
             }
             else
             {
-                this.Log($"too far, remember target [{_targetMemoryLocation:X2}x0]");
-                self.Remember(_targetMemoryLocation, food);
+                this.Log($"too far, remember target [0x{TargetAddress:X2}]");
+                self.Remember(TargetAddress, food);
                 self.Status = "Not Eating - Too Far";
-                StartIndex = _tooFarGoto;
+                StartIndex = TooFarGoto;
             }
 
             base.HandleCollision(self, other, deltaTime);

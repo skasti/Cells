@@ -1,4 +1,5 @@
-﻿using System.CodeDom.Compiler;
+﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -11,14 +12,14 @@ namespace Cells.Genetics.Genes
 {
     public class UpdateBlock : ICanUpdate
     {
-        public class Maker : GeneMaker
+        public class Maker : GeneMaker<UpdateBlock>
         {
-            public Maker()
-                : base(0x50, 0x5F, 2)
+            public Maker(byte markerFrom, byte? markerTo = null)
+                : base(markerFrom, markerTo ?? markerFrom, 2)
             {
             }
 
-            public override IAmAGene Make(byte[] fragment)
+            public override UpdateBlock Make(byte[] fragment)
             {
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
@@ -26,6 +27,15 @@ namespace Cells.Genetics.Genes
                 return new UpdateBlock(
                     blockLength: fragment[1]
                 );
+            }
+
+            public override byte[] MakeFragment(UpdateBlock gene)
+            {
+                var parts = new List<byte[]>();
+                var mainFrag = base.MakeFragment(gene);
+                parts.Add(mainFrag);
+                parts.AddRange(gene._updates.Select(g => GeneInterpreter.Makers.FirstOrDefault(m => m.GeneType == g.GetType())?.ToFragment(g) ?? Array.Empty<byte>()));
+                return parts.Join().ToArray();
             }
         }
 
@@ -42,12 +52,14 @@ namespace Cells.Genetics.Genes
             BlockLength = blockLength;
         }
 
-        public void ReadGenes(int startIndex, List<IAmAGene> genes)
+        public int ReadGenes(int startIndex, List<IAmAGene> genes)
         {
             if (BlockLength == 0)
-                return;
+                return startIndex;
 
-            for (int i = startIndex; i <= startIndex + BlockLength; i++)
+            int i = startIndex;
+
+            for (; i <= startIndex + BlockLength; i++)
             {
                 if (i >= genes.Count)
                     break;
@@ -55,11 +67,22 @@ namespace Cells.Genetics.Genes
                 if (genes[i] == this)
                     continue;
 
-                if (genes[i] is ICanUpdate)
+                if (genes[i] is UpdateBlock)
+                {
+                    var block = genes[i] as UpdateBlock;
+                    var new_i = block.ReadGenes(i, genes);
+                    if (new_i > i)
+                        i = new_i - 1;
+
+                    if (block.BlockLength > 0)
+                        _updates.Add(block);
+                }
+                else if (genes[i] is ICanUpdate)
                     _updates.Add(genes[i] as ICanUpdate);
             }
 
             BlockLength = _updates.Count;
+            return i;
         }
 
         public int Update(Organism self, float deltaTime)
@@ -92,10 +115,13 @@ namespace Cells.Genetics.Genes
                     this.Log($"{updater.ToString()} [C: {updater.Cost} S: {skip} dT: {dt.Microseconds}]");
 
                 for (var j = i + 1; j < i + skip && j < _updates.Count; j++)
+                {
                     this.Log($"- {_updates[j].ToString()}");
+                    Cost += 0.2f;
+                }
 
                 i += skip;
-                Cost += updater.Cost;
+                Cost += Math.Max(updater.Cost, 0.2f);
             }
             LogIndentLevel -= 1;
             this.Log($"}}");
@@ -110,6 +136,14 @@ namespace Cells.Genetics.Genes
                 _string = $"UpdateBlock[{_updates.Count}]";
 
             return _string;
+        }
+
+        internal UpdateBlock WithGenes(params ICanUpdate[] genes)
+        {
+            _updates.Clear();
+            _updates.AddRange(genes);
+            BlockLength = _updates.Count;
+            return this;
         }
     }
 }

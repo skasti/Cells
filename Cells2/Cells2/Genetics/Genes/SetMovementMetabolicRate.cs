@@ -7,49 +7,50 @@ using Microsoft.Xna.Framework;
 
 namespace Cells.Genetics.Genes
 {
-    public class SetMovementMetabolicRate : ITrait, ICanUpdate
+    public class SetMovementMetabolicRate : ITrait
     {
-        public class Maker : GeneMaker
+        public class Maker : GeneMaker<SetMovementMetabolicRate>
         {
-            public Maker()
-                : base(0x48, 0x49, 2)
+            public Maker(byte markerFrom, byte? markerTo = null)
+                : base(markerFrom, markerTo ?? markerFrom, 2)
             {
             }
 
-            public override IAmAGene Make(byte[] fragment)
+            public override SetMovementMetabolicRate Make(byte[] fragment)
             {
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
-                return new SetMovementMetabolicRate(fragment[1].AsFloat(0.0001f, 1f));
+                return new SetMovementMetabolicRate(fragment[1].AsFloat(0.01f, 10f));
+            }
+            public override byte[] MakeFragment(SetMovementMetabolicRate gene)
+            {
+                var fragment = base.MakeFragment(gene);
+                fragment[1] = gene.Rate.AsGeneByte(0.01f, 10f);
+                return fragment;
             }
         }
-        private readonly float _rate;
+        public readonly float Rate;
         public float Cost { get; private set; } = 2f;
         public string Name { get; } = "MOVEMENT METABOLISM";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
 
-        public SetMovementMetabolicRate(float rate) {
-            _rate = rate;
+        public SetMovementMetabolicRate(float rate)
+        {
+            Rate = rate;
         }
 
-        public void Apply(Organism self)
+        public void Apply(Organism self, List<IAmAGene> genes)
         {
-            self.MovementMetabolicRate = _rate;
-        }
-
-        public int Update(Organism self, float deltaTime)
-        {
-            self.MovementMetabolicRate = _rate;
-            return 0;
+            self.MovementMetabolicRate = Rate;
         }
 
         private string _string = null;
         public override string ToString()
         {
             if (_string == null)
-                _string = $"SET MovementMetabolicRate[{_rate:0.0000}]";
+                _string = $"SET MovementMetabolicRate[{Rate:0.0000}]";
 
             return _string;
         }

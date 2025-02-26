@@ -46,25 +46,43 @@ namespace Cells.Genetics.Genes
 
         public virtual void HandleCollision(Organism self, GameObject other, float deltaTime)
         {
+            var sw = new Stopwatch();
+            this.Log($"Handler ({_updates.Count}) {{", 1);
             for (int i = StartIndex; i < _updates.Count; i++)
             {
                 var updater = _updates[i];
                 updater.Log.Clear();
-                updater.LogIndentLevel = LogIndentLevel + 1;
+                sw.Restart();
                 var skip = updater.Update(self, deltaTime);
-                Log.AddRange(updater.Log);
+                sw.Stop();
+                var dt = sw.Elapsed * (1f/deltaTime);
 
-                if (skip > 0)
+                if (updater.Log.Count > 0)
                 {
-                    Log[Log.Count - 1] = $"{Log.Last()} [SKIP {skip}]";
+                    this.Log($"{updater.ToString()} {{", 1);
+                    updater.Log.ForEach((l) => this.Log(l));
+                    LogIndentLevel -= 1;
+                    this.Log($"}} [C: {updater.Cost} S: {skip} dT: {dt.Microseconds}]");
+                }
+                else
+                    this.Log($"{updater.ToString()} [C: {updater.Cost} S: {skip} dT: {dt.Microseconds}]");
 
-                    for (var j = i + 1; j < i + skip && j < _updates.Count; j++)
-                        this.Log($"- {_updates[j].ToString()}");
+                for (var j = i + 1; j < i + skip && j < _updates.Count; j++)
+                {
+                    this.Log($"- {_updates[j].ToString()}");
+                    Cost += 0.2f;
                 }
 
                 i += skip;
-                Cost += updater.Cost;
+                Cost += Math.Max(updater.Cost, 0.2f);
             }
+            LogIndentLevel -= 1;
+            this.Log($"}}");
+        }
+
+        public virtual void Update(float deltaTime)
+        {
+            
         }
     }
 }

@@ -8,40 +8,48 @@ namespace Cells.Genetics.Genes.Programming
 {
     public class MemorySet: ICanUpdate
     {
-        public class Maker : GeneMaker
+        public class Maker : GeneMaker<MemorySet>
         {
-            public Maker()
-                : base(0x04, 3)
+            public Maker(byte markerFrom, byte markerTo)
+                : base(markerFrom, markerTo, 3)
             {
             }
 
-            public override IAmAGene Make(byte[] fragment)
+            public override MemorySet Make(byte[] fragment)
             {
                 if (fragment.Length < Size)
                     throw new GenomeTooShortException();
 
                 return new MemorySet(
-                    memoryLocation: fragment[1].AsByte(0xFF),
-                    value: fragment[2].AsByte(0xFF)
+                    address: fragment[1].AsByte(0xFF, 0x11),
+                    value: fragment[2]
                     );
             }
+
+            public override byte[] MakeFragment(MemorySet gene)
+            {
+                var fragment = base.MakeFragment(gene);
+                fragment[1] = gene.Address;
+                fragment[2] = gene.Value;
+                return fragment;
+            }
         }
-        private readonly byte _value;
-        private readonly byte _memoryLocation;
+        public readonly byte Value;
+        public readonly byte Address;
         public float Cost { get; private set; } = 0.5f;
         public string Name { get; } = "SET";
         public List<string> Log { get; } = new List<string>();
         public int LogIndentLevel { get; set; } = 0;
 
-        public MemorySet(byte memoryLocation, byte value)
+        public MemorySet(byte address, byte value)
         {
-            _memoryLocation = memoryLocation;
-            _value = value;
+            Address = address;
+            Value = value;
         }
 
         public int Update(Organism self, float deltaTime)
         {
-            self.Remember(_memoryLocation, _value);
+            self.Remember(Address, Value);
             return 0;
         }
 
@@ -49,7 +57,7 @@ namespace Cells.Genetics.Genes.Programming
         public override string ToString()
         {
             if (_string == null)
-                _string = $"{Name} [{_memoryLocation:X2}x0] = {_value}";
+                _string = $"{Name} [0x{Address:X2}] = {Value}";
 
             return _string;
         }
